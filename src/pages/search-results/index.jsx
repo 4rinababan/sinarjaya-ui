@@ -100,7 +100,7 @@ const SearchResults = () => {
     },
     {
       id: 6,
-      name: 'Canopy Aluminum Transparan',
+      name: 'Canopy Aluminum Transparan ',
       description: 'Canopy aluminum dengan atap polycarbonate transparan. Melindungi dari hujan sambil tetap terang.',
       image: 'https://images.pixabay.com/photo/2016/11/29/03/53/architecture-1867187_1280.jpg?w=400&h=400&fit=crop',
       price: 3200000,
