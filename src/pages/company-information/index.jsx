@@ -52,13 +52,13 @@ const CompanyInformation = () => {
         <CertificationsSection />
 
         {/* Company History */}
-        <CompanyHistory />
+        {/* <CompanyHistory /> */}
 
         {/* Team Section */}
-        <TeamSection />
+        {/* <TeamSection /> */}
 
         {/* Facility Showcase */}
-        <FacilityShowcase />
+        {/* <FacilityShowcase /> */}
 
         {/* Testimonials Section */}
         <TestimonialsSection />

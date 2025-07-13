@@ -19,7 +19,7 @@ const Homepage = () => {
         <CategorySection />
         <CompanyOverview />
         <FeaturedProducts />
-        <TestimonialSection />
+        {/* <TestimonialSection /> */}
         <ContactSection />
       </main>
 

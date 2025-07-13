@@ -8,21 +8,21 @@ const HeroSection = () => {
   const heroSlides = [
     {
       id: 1,
-      image: "https://images.pexels.com/photos/159306/construction-site-build-construction-work-159306.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-      title: "Solusi Aluminum Terpercaya",
+      image: "../../assets/images/BG-1.jpg",
+      title: "Solusi Aluminum Anda",
       subtitle: "Produk berkualitas tinggi untuk konstruksi dan renovasi",
-      description: "Dapatkan material aluminum premium dengan harga terjangkau dan layanan terbaik di Indonesia"
+      description: "Dapatkan material aluminum premium dengan harga terjangkau"
     },
     {
       id: 2,
-      image: "https://images.pixabay.com/photo/2016/11/29/06/15/facade-1867308_1280.jpg",
+      image: "../../assets/images/BG-2.jpg",
       title: "Inovasi Desain Modern",
       subtitle: "Aluminum berkualitas untuk arsitektur kontemporer",
       description: "Wujudkan visi arsitektur Anda dengan produk aluminum yang tahan lama dan estetis"
     },
     {
       id: 3,
-      image: "https://images.unsplash.com/photo-1541888946425-d81bb19240f5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80",
+      image: "../../assets/images/BG-3.jpg",
       title: "Kepercayaan Kontraktor",
       subtitle: "Partner terpilih untuk proyek konstruksi",
       description: "Dipercaya oleh ribuan kontraktor di seluruh Indonesia untuk proyek berkualitas tinggi"
@@ -85,13 +85,13 @@ const HeroSection = () => {
                   <Button
                     variant="default"
                     size="lg"
-                    className="bg-primary hover:bg-primary/90 text-primary-foreground"
+                    className="bg-primary hover:bg-green text-primary-foreground"
                     onClick={() => window.location.href = '/product-catalog'}
                   >
                     Lihat Katalog Produk
                   </Button>
                   <Button
-                    variant="outline"
+                    variant="success"
                     size="lg"
                     className="border-white text-white hover:bg-white hover:text-primary"
                     onClick={() => window.location.href = '/contact-inquiry'}

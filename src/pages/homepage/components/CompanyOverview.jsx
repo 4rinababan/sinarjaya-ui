@@ -90,7 +90,7 @@ const CompanyOverview = () => {
           <div className="relative">
             <div className="relative rounded-2xl overflow-hidden shadow-elevation-2">
               <Image
-                src="https://images.pexels.com/photos/5691659/pexels-photo-5691659.jpeg?auto=compress&cs=tinysrgb&w=800"
+                src="../assets/images/K1.jpeg"
                 alt="Sinar Jaya Aluminum Workshop"
                 className="w-full h-96 lg:h-[500px] object-cover"
               />

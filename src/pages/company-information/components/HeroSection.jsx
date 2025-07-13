@@ -48,7 +48,7 @@ const HeroSection = () => {
           <div className="relative">
             <div className="relative overflow-hidden rounded-2xl shadow-elevation-3">
               <Image
-                src="https://images.pexels.com/photos/159306/construction-site-build-construction-work-159306.jpeg"
+                src="../assets/images/K1.jpeg"
                 alt="Sinar Jaya Aluminum facility and products"
                 className="w-full h-80 lg:h-96 object-cover"
               />

@@ -70,21 +70,7 @@ const ContactInquiry = () => {
           </section>
 
           {/* Main Content */}
-          <section className="py-12 md:py-16">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* Contact Form - Takes 2 columns on large screens */}
-                <div className="lg:col-span-2">
-                  <ContactForm />
-                </div>
-
-                {/* Contact Information - Takes 1 column on large screens */}
-                <div className="lg:col-span-1">
-                  <ContactInfo />
-                </div>
-              </div>
-            </div>
-          </section>
+          
 
           {/* FAQ Section */}
           <section className="py-12 md:py-16 bg-muted/30">

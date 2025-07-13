@@ -16,7 +16,7 @@ const ContactSection = () => {
       id: 2,
       icon: "Phone",
       title: "Telepon & WhatsApp",
-      content: "+62 21 8234 5678\n+62 812 3456 7890",
+      content: "+62 812 2459 1336",
       action: "Hubungi Sekarang",
       actionType: "phone"
     },
@@ -43,7 +43,7 @@ const ContactSection = () => {
       id: 1,
       name: "WhatsApp",
       icon: "MessageCircle",
-      url: "https://wa.me/6281234567890",
+      url: "https://wa.me/6281224591336",
       color: "text-green-600"
     },
     {
@@ -193,7 +193,7 @@ const ContactSection = () => {
                   fullWidth
                   iconName="MessageCircle"
                   iconPosition="left"
-                  onClick={() => window.open('https://wa.me/6281234567890', '_blank')}
+                  onClick={() => window.open('https://wa.me/6281224591336', '_blank')}
                 >
                   Chat WhatsApp
                 </Button>

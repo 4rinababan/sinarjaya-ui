@@ -126,7 +126,7 @@ const CertificationsSection = () => {
             
             <div className="relative overflow-hidden rounded-xl">
               <Image
-                src="https://images.pexels.com/photos/5691659/pexels-photo-5691659.jpeg"
+                src="../assets/images/K8.jpg"
                 alt="Quality control process at Sinar Jaya Aluminum"
                 className="w-full h-64 object-cover"
               />

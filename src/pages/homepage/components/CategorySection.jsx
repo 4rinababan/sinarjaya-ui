@@ -8,15 +8,15 @@ const CategorySection = () => {
       id: 1,
       name: "Profil Aluminum",
       description: "Berbagai jenis profil untuk konstruksi",
-      image: "https://images.pexels.com/photos/5691659/pexels-photo-5691659.jpeg?auto=compress&cs=tinysrgb&w=800",
+      image: "../../../assets/images/K5.png",
       productCount: 45,
       icon: "Building2"
     },
     {
       id: 2,
-      name: "Kusen & Jendela",
-      description: "Kusen dan jendela aluminum berkualitas",
-      image: "https://images.pixabay.com/photo/2017/03/22/17/39/kitchen-2165756_1280.jpg",
+      name: "Jendela Alumunium",
+      description: "jendela aluminum berkualitas",
+      image: "../../../assets/images/K3.jpeg",
       productCount: 32,
       icon: "Home"
     },
@@ -24,7 +24,7 @@ const CategorySection = () => {
       id: 3,
       name: "Pintu Aluminum",
       description: "Pintu aluminum untuk rumah dan kantor",
-      image: "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      image: "../../../assets/images/K6.jpeg",
       productCount: 28,
       icon: "DoorOpen"
     },
@@ -32,7 +32,7 @@ const CategorySection = () => {
       id: 4,
       name: "Partisi & Dinding",
       description: "Sistem partisi aluminum modern",
-      image: "https://images.pexels.com/photos/6782567/pexels-photo-6782567.jpeg?auto=compress&cs=tinysrgb&w=800",
+      image: "../../../assets/images/K2.jpeg",
       productCount: 19,
       icon: "Grid3X3"
     },
@@ -40,7 +40,7 @@ const CategorySection = () => {
       id: 5,
       name: "Atap & Kanopi",
       description: "Solusi atap aluminum tahan cuaca",
-      image: "https://images.pixabay.com/photo/2016/11/18/17/20/roof-1836758_1280.jpg",
+      image: "../../assets/images/K4.jpg",
       productCount: 23,
       icon: "Umbrella"
     },
@@ -48,7 +48,7 @@ const CategorySection = () => {
       id: 6,
       name: "Aksesoris",
       description: "Aksesoris pelengkap aluminum",
-      image: "https://images.unsplash.com/photo-1581244277943-fe4a9c777189?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      image: "../assets/images/K7.jpg",
       productCount: 67,
       icon: "Settings"
     }

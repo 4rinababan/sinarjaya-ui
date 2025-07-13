@@ -176,7 +176,7 @@ const Header = () => {
                   variant="outline"
                   size="sm"
                   className="w-full"
-                  onClick={() => window.open('https://wa.me/6281234567890', '_blank')}
+                  onClick={() => window.open('https://wa.me/6285161628624', '_blank')}
                 >
                   <Icon name="MessageCircle" size={16} className="mr-2" />
                   WhatsApp

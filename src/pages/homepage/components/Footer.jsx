@@ -9,7 +9,7 @@ const Footer = () => {
       { label: "Tentang Kami", href: "/company-information" },
       { label: "Visi & Misi", href: "/company-information#vision" },
       { label: "Tim Kami", href: "/company-information#team" },
-      { label: "Karir", href: "/company-information#career" }
+
     ],
     products: [
       { label: "Profil Aluminum", href: "/product-catalog?category=1" },
@@ -21,7 +21,6 @@ const Footer = () => {
       { label: "Konsultasi Gratis", href: "/contact-inquiry" },
       { label: "Custom Design", href: "/contact-inquiry?service=custom" },
       { label: "Instalasi", href: "/contact-inquiry?service=installation" },
-      { label: "After Sales", href: "/contact-inquiry?service=support" }
     ],
     support: [
       { label: "Hubungi Kami", href: "/contact-inquiry" },
@@ -32,18 +31,17 @@ const Footer = () => {
   };
 
   const socialLinks = [
-    { name: "WhatsApp", icon: "MessageCircle", url: "https://wa.me/6281234567890" },
+    { name: "WhatsApp", icon: "MessageCircle", url: "https://wa.me/6285161628624" },
     { name: "Instagram", icon: "Instagram", url: "https://instagram.com/sinarjayaaluminum" },
     { name: "Facebook", icon: "Facebook", url: "https://facebook.com/sinarjayaaluminum" },
-    { name: "YouTube", icon: "Youtube", url: "https://youtube.com/@sinarjayaaluminum" }
   ];
 
-  const certifications = [
-    "SNI Certified",
-    "ISO 9001:2015",
-    "SIUP & TDP",
-    "Garansi 10 Tahun"
-  ];
+  // const certifications = [
+  //   "SNI Certified",
+  //   "ISO 9001:2015",
+  //   "SIUP & TDP",
+  //   "Garansi 10 Tahun"
+  // ];
 
   return (
     <footer className="bg-secondary text-secondary-foreground">
@@ -170,24 +168,10 @@ const Footer = () => {
         {/* Certifications */}
         <div className="border-t border-white/20 mt-12 pt-8">
           <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
-            <div>
-              <h4 className="font-heading font-semibold mb-3 text-center md:text-left">
-                Sertifikasi & Jaminan
-              </h4>
-              <div className="flex flex-wrap justify-center md:justify-start gap-4">
-                {certifications.map((cert, index) => (
-                  <span
-                    key={index}
-                    className="text-xs bg-white/10 px-3 py-1 rounded-full"
-                  >
-                    {cert}
-                  </span>
-                ))}
-              </div>
-            </div>
+            
 
             {/* Social Media */}
-            <div>
+            {/* <div>
               <h4 className="font-heading font-semibold mb-3 text-center">
                 Ikuti Kami
               </h4>
@@ -205,7 +189,7 @@ const Footer = () => {
                   </a>
                 ))}
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
