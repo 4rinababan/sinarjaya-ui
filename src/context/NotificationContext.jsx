@@ -1,3 +1,4 @@
+// src/context/NotificationContext.js
 import React, { createContext, useState, useEffect } from "react";
 import useSound from "use-sound";
 import notifSound from "/assets/notif.wav";
@@ -11,30 +12,28 @@ export const NotificationProvider = ({ children }) => {
   const [notifications, setNotifications] = useState([]);
   const [play] = useSound(notifSound);
 
+  // const user = getSavedUser();
+  // const decoded = getUserFromToken();
+  // console.log(user);
+  // console.log(decoded);
   useEffect(() => {
-    const user = getUserFromToken();
+    const user = getUserFromToken(); // ✅ ambil dari storage helper
+    const decode = getSavedUser();
     const userId = user?.user_id || "guest";
     const role = user?.role || "guest";
 
-    // SSE Subscribe
+    // gunakan service buat bikin SSE
     const eventSource = eventService.subscribe(userId, role);
 
     eventSource.onopen = () => {
-      // console.log(`🔌 SSE connected as ${role}`);
+      // console.log(`🔌 SSE connected as ${role}`); // SSE
     };
-
-    // Autoplay fix for Chrome: aktifkan AudioContext setelah user gesture
-    const enableSound = () => {
-      play(); // memaksa audio context resume
-      window.removeEventListener("click", enableSound);
-    };
-    window.addEventListener("click", enableSound);
 
     eventSource.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
 
-        play(); // mainkan suara notif
+        play();
 
         setNotifications((prev) => [
           {
@@ -45,19 +44,13 @@ export const NotificationProvider = ({ children }) => {
           },
           ...prev,
         ]);
-      } catch (err) {
-        console.error("Error parsing SSE message:", err);
-      }
+      } catch (err) {}
     };
 
-    eventSource.onerror = (err) => {
-      console.error("SSE error:", err);
-    };
+    eventSource.onerror = (err) => {};
 
-    // Cleanup
     return () => {
       eventSource.close();
-      window.removeEventListener("click", enableSound);
     };
   }, [play]);
 
