@@ -1,17 +1,13 @@
 import CryptoJS from "crypto-js";
 import { jwtDecode } from "jwt-decode";
 
-const SECRET_KEY = import.meta.env.APP_SECRET_KEY;
 
-// ============ TOKEN ============ //
+const SECRET_KEY = import.meta.env.VITE_APP_SECRET_KEY;
+
+// ===== TOKEN ===== //
 export function saveToken(token) {
   const encrypted = CryptoJS.AES.encrypt(token, SECRET_KEY).toString();
   localStorage.setItem("jwt", encrypted);
-}
-
-export function saveToken2(token) {
-  const encrypted = CryptoJS.AES.encrypt(token, SECRET_KEY).toString();
-  localStorage.setItem("jwt2", encrypted);
 }
 
 export function getToken() {
@@ -35,7 +31,7 @@ export function getUserFromToken() {
   }
 }
 
-// ============ USER ============ //
+// ===== USER ===== //
 export function saveUser(user) {
   const encrypted = CryptoJS.AES.encrypt(
     JSON.stringify(user),
@@ -57,4 +53,5 @@ export function getSavedUser() {
 
 export function clearUser() {
   localStorage.removeItem("jwt");
+  // localStorage.removeItem("user");
 }
