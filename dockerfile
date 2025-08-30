@@ -1,27 +1,6 @@
-# Tahap 1: Build React
-FROM node:18-alpine AS builder
-
-WORKDIR /app
-
-COPY package*.json ./
-RUN npm install
-
-COPY . .
-# RUN npm run build
-RUN NODE_OPTIONS="--max-old-space-size=2048" npm run build
-
-# Tahap 2: Serve pakai Nginx
 FROM nginx:stable-alpine
-
-# Hapus default html Nginx
 RUN rm -rf /usr/share/nginx/html/*
-
-# Copy hasil build ke Nginx folder
-COPY --from=builder /app/dist /usr/share/nginx/html
-
-
-# Tambahkan routing untuk SPA (React Router)
+COPY dist /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/conf.d/default.conf
-
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
