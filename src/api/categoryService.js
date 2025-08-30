@@ -3,7 +3,7 @@ import request from "./api";
 
 export const categoryService = {
   getAll: (page = 1, limit = 10) =>
-    request(`/categories?page=${page}&limit=${limit}`, {}, true),
+    request(`/categories?page=${page}&limit=${limit}`, {}, false),
 
   create: (data) =>
     request(`/categories`, {
