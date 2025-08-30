@@ -1,10 +1,6 @@
-// src/context/NotificationContext.js
 import React, { createContext, useState, useEffect } from "react";
 import useSound from "use-sound";
 import notifSound from "/assets/notif.wav";
-
-// import { getSavedUser } from "./../../utils/storage"; // ✅ ambil dari storage.js
-// import { eventService } from "@/services/eventService"; // ✅ pakai eventService
 
 import { getSavedUser, getUserFromToken } from "../utils/storage";
 import { eventService } from "../api/eventService";
@@ -15,28 +11,30 @@ export const NotificationProvider = ({ children }) => {
   const [notifications, setNotifications] = useState([]);
   const [play] = useSound(notifSound);
 
-  // const user = getSavedUser();
-  // const decoded = getUserFromToken();
-  // console.log(user);
-  // console.log(decoded);
   useEffect(() => {
-    const user = getUserFromToken(); // ✅ ambil dari storage helper
-    const decode = getSavedUser();
+    const user = getUserFromToken();
     const userId = user?.user_id || "guest";
     const role = user?.role || "guest";
 
-    // gunakan service buat bikin SSE
+    // SSE Subscribe
     const eventSource = eventService.subscribe(userId, role);
 
     eventSource.onopen = () => {
-      // console.log(`🔌 SSE connected as ${role}`); // SSE
+      // console.log(`🔌 SSE connected as ${role}`);
     };
+
+    // Autoplay fix for Chrome: aktifkan AudioContext setelah user gesture
+    const enableSound = () => {
+      play(); // memaksa audio context resume
+      window.removeEventListener("click", enableSound);
+    };
+    window.addEventListener("click", enableSound);
 
     eventSource.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
 
-        play();
+        play(); // mainkan suara notif
 
         setNotifications((prev) => [
           {
@@ -47,13 +45,19 @@ export const NotificationProvider = ({ children }) => {
           },
           ...prev,
         ]);
-      } catch (err) {}
+      } catch (err) {
+        console.error("Error parsing SSE message:", err);
+      }
     };
 
-    eventSource.onerror = (err) => {};
+    eventSource.onerror = (err) => {
+      console.error("SSE error:", err);
+    };
 
+    // Cleanup
     return () => {
       eventSource.close();
+      window.removeEventListener("click", enableSound);
     };
   }, [play]);
 
