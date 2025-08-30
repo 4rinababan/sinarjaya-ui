@@ -6,22 +6,22 @@ const ValuePropositions = () => {
     {
       icon: "Award",
       title: "Kualitas Terjamin",
-      description: "Produk aluminum berkualitas tinggi dengan standar internasional dan sertifikasi resmi"
+      description: "Produk Aluminium  berkualitas tinggi dengan standar internasional"
     },
     {
       icon: "Users",
       title: "Tim Berpengalaman",
-      description: "Didukung oleh tim ahli dengan pengalaman puluhan tahun di industri aluminum"
+      description: "Didukung oleh tim ahli dengan pengalaman puluhan tahun di industri Aluminium "
     },
     {
       icon: "Truck",
       title: "Pengiriman Cepat",
-      description: "Jaringan distribusi luas dengan pengiriman ke seluruh Indonesia"
+      description: "Melayani Ke seluruh Wilayah Jabodetabek"
     },
     {
       icon: "Shield",
       title: "Garansi Produk",
-      description: "Jaminan kualitas dengan garansi resmi untuk semua produk aluminum"
+      description: "Kami Memberi Jaminan Kepuasan Pelanggan dengan garansi"
     },
     {
       icon: "HeartHandshake",
@@ -40,10 +40,10 @@ const ValuePropositions = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <h2 className="text-3xl lg:text-4xl font-heading font-bold text-foreground mb-4">
-            Mengapa Memilih Sinar Jaya Aluminum?
+            Mengapa Memilih Meisha Aluminium  Kaca?
           </h2>
           <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-            Komitmen kami terhadap keunggulan menjadikan Sinar Jaya Aluminum sebagai pilihan utama untuk semua kebutuhan aluminum Anda
+            Komitmen kami terhadap keunggulan menjadikan Meisha Aluminium  Kaca sebagai pilihan utama untuk semua kebutuhan Aluminium  Anda
           </p>
         </div>
         

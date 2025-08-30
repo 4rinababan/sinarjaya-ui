@@ -13,7 +13,7 @@ const TestimonialsSection = () => {
       project: "Pembangunan Gedung Perkantoran 15 Lantai",
       image: "https://randomuser.me/api/portraits/men/52.jpg",
       rating: 5,
-      testimonial: `Sinar Jaya Aluminum telah menjadi partner terpercaya kami selama 8 tahun. Kualitas produk aluminum mereka sangat konsisten dan sesuai dengan spesifikasi teknis yang ketat. Tim teknis mereka juga sangat responsif dalam memberikan solusi untuk kebutuhan khusus proyek kami.`,
+      testimonial: `Meisha Aluminum Kaca telah menjadi partner terpercaya kami selama 8 tahun. Kualitas produk aluminum mereka sangat konsisten dan sesuai dengan spesifikasi teknis yang ketat. Tim teknis mereka juga sangat responsif dalam memberikan solusi untuk kebutuhan khusus proyek kami.`,
       projectValue: "Rp 2.5 Miliar",
       completedYear: "2023"
     },
@@ -35,7 +35,7 @@ const TestimonialsSection = () => {
       project: "Renovasi Kusen dan Pintu Aluminum",
       image: "https://randomuser.me/api/portraits/men/41.jpg",
       rating: 5,
-      testimonial: `Sangat puas dengan produk dan layanan Sinar Jaya Aluminum. Proses pemesanan mudah, pengiriman tepat waktu, dan hasil pemasangan sangat memuaskan. Kusen aluminum yang dipasang sudah 2 tahun dan masih terlihat seperti baru. Harga juga sangat kompetitif.`,
+      testimonial: `Sangat puas dengan produk dan layanan Meisha Aluminum Kaca. Proses pemesanan mudah, pengiriman tepat waktu, dan hasil pemasangan sangat memuaskan. Kusen aluminum yang dipasang sudah 2 tahun dan masih terlihat seperti baru. Harga juga sangat kompetitif.`,
       projectValue: "Rp 45 Juta",
       completedYear: "2022"
     },
@@ -46,7 +46,7 @@ const TestimonialsSection = () => {
       project: "Kompleks Perumahan Green Valley",
       image: "https://randomuser.me/api/portraits/men/48.jpg",
       rating: 5,
-      testimonial: `Untuk proyek perumahan skala besar, kami membutuhkan supplier yang dapat memenuhi volume besar dengan kualitas konsisten. Sinar Jaya Aluminum terbukti mampu memenuhi kebutuhan 150 unit rumah dengan standar kualitas yang sama. Sistem distribusi mereka juga sangat efisien.`,
+      testimonial: `Untuk proyek perumahan skala besar, kami membutuhkan supplier yang dapat memenuhi volume besar dengan kualitas konsisten. Meisha Aluminum Kaca terbukti mampu memenuhi kebutuhan 150 unit rumah dengan standar kualitas yang sama. Sistem distribusi mereka juga sangat efisien.`,
       projectValue: "Rp 4.2 Miliar",
       completedYear: "2023"
     },
@@ -57,7 +57,7 @@ const TestimonialsSection = () => {
       project: "Desain Interior Kantor Modern",
       image: "https://randomuser.me/api/portraits/women/29.jpg",
       rating: 5,
-      testimonial: `Kolaborasi dengan Sinar Jaya Aluminum selalu memberikan hasil yang memuaskan. Mereka memiliki variasi produk yang lengkap dan dapat disesuaikan dengan konsep desain yang kami buat. Tim mereka juga sangat kooperatif dalam mengakomodasi permintaan custom.`,
+      testimonial: `Kolaborasi dengan Meisha Aluminum Kaca selalu memberikan hasil yang memuaskan. Mereka memiliki variasi produk yang lengkap dan dapat disesuaikan dengan konsep desain yang kami buat. Tim mereka juga sangat kooperatif dalam mengakomodasi permintaan custom.`,
       projectValue: "Rp 320 Juta",
       completedYear: "2023"
     }

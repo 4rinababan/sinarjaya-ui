@@ -36,7 +36,7 @@ const SortDropdown = ({ currentSort, onSortChange }) => {
 
   return (
     <div className="relative" ref={dropdownRef}>
-      <Button
+      {/* <Button
         variant="outline"
         onClick={() => setIsOpen(!isOpen)}
         className="justify-between min-w-[200px]"
@@ -49,7 +49,7 @@ const SortDropdown = ({ currentSort, onSortChange }) => {
           <span className="hidden sm:inline">{currentOption.label}</span>
           <span className="sm:hidden">Urutkan</span>
         </div>
-      </Button>
+      </Button> */}
 
       {isOpen && (
         <div className="absolute top-full left-0 right-0 mt-1 bg-card border border-border rounded-lg shadow-elevation-2 z-dropdown overflow-hidden">

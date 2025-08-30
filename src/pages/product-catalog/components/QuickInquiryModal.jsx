@@ -1,23 +1,44 @@
-import React, { useState } from 'react';
-import Icon from '../../../components/AppIcon';
-import Button from '../../../components/ui/Button';
-import Input from '../../../components/ui/Input';
-import Image from '../../../components/AppImage';
+import React, { useState, useEffect } from "react";
+import Icon from "../../../components/AppIcon";
+import Button from "../../../components/ui/Button";
+import Input from "../../../components/ui/Input";
+import Image from "../../../components/AppImage";
+import { infoService } from "../../../api/infoService";
 
 const QuickInquiryModal = ({ isOpen, onClose, product }) => {
+  const BASE_URL = import.meta.env.VITE_BASE_URL;
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    quantity: '',
-    message: ''
+    name: "",
+    email: "",
+    phone: "",
+    quantity: "",
+    message: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [whatsappNumber, setWhatsappNumber] = useState("");
+
+  useEffect(() => {
+    if (isOpen && !whatsappNumber) {
+      // hanya fetch kalau kosong
+      const fetchPhone = async () => {
+        try {
+          const response = await infoService.getInfo();
+          if (response?.status === 200 && response.data?.phone) {
+            setWhatsappNumber(response.data.phone);
+          }
+        } catch (error) {
+          console.error("Gagal mengambil nomor WhatsApp:", error);
+        }
+      };
+
+      fetchPhone();
+    }
+  }, [isOpen, whatsappNumber]);
 
   const handleInputChange = (field, value) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
@@ -26,34 +47,40 @@ const QuickInquiryModal = ({ isOpen, onClose, product }) => {
     setIsSubmitting(true);
 
     // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    await new Promise((resolve) => setTimeout(resolve, 1500));
 
     // Create WhatsApp message
-    const message = `Halo, saya tertarik dengan produk:\n\n*${product.name}*\n\nDetail:\n- Nama: ${formData.name}\n- Email: ${formData.email}\n- Telepon: ${formData.phone}\n- Jumlah: ${formData.quantity} ${product.unit}\n- Pesan: ${formData.message || 'Tidak ada pesan tambahan'}\n\nMohon informasi lebih lanjut. Terima kasih!`;
-    
-    const whatsappUrl = `https://wa.me/6281234567890?text=${encodeURIComponent(message)}`;
-    window.open(whatsappUrl, '_blank');
+    const message = `Halo, saya tertarik dengan produk:\n\n*${
+      product.name
+    }*\n\nDetail:\n- Nama: ${formData.name}\n- Email: ${
+      formData.email
+    }\n- Telepon: ${formData.phone}\n- Jumlah: ${formData.quantity} ${
+      product.unit
+    }\n- Pesan: ${
+      formData.message || "Tidak ada pesan tambahan"
+    }\n\nMohon informasi lebih lanjut. Terima kasih!`;
+
+    const formattedNumber = whatsappNumber.replace(/\D/g, ""); // Hilangkan non-digit
+    const whatsappUrl = `https://wa.me/${formattedNumber}?text=${encodeURIComponent(
+      message
+    )}`;
+
+    // const whatsappUrl = `https://wa.me/6281224591336?text=${encodeURIComponent(
+    //   message
+    // )}`;
+    window.open(whatsappUrl, "_blank");
 
     setIsSubmitting(false);
     onClose();
-    
+
     // Reset form
     setFormData({
-      name: '',
-      email: '',
-      phone: '',
-      quantity: '',
-      message: ''
+      name: "",
+      email: "",
+      phone: "",
+      quantity: "",
+      message: "",
     });
-  };
-
-  const formatPrice = (price) => {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    }).format(price);
   };
 
   if (!isOpen || !product) return null;
@@ -61,7 +88,7 @@ const QuickInquiryModal = ({ isOpen, onClose, product }) => {
   return (
     <div className="fixed inset-0 z-modal flex items-center justify-center p-4">
       <div className="fixed inset-0 bg-black/50" onClick={onClose} />
-      
+
       <div className="relative bg-card rounded-lg shadow-elevation-3 w-full max-w-2xl max-h-[90vh] overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-border">
@@ -80,7 +107,7 @@ const QuickInquiryModal = ({ isOpen, onClose, product }) => {
             <div className="flex items-start space-x-4 p-4 bg-muted/30 rounded-lg mb-6">
               <div className="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0">
                 <Image
-                  src={product.image}
+                  src={`${BASE_URL}/${product.images}`}
                   alt={product.name}
                   className="w-full h-full object-cover"
                 />
@@ -90,16 +117,8 @@ const QuickInquiryModal = ({ isOpen, onClose, product }) => {
                   {product.name}
                 </h3>
                 <p className="text-sm font-caption text-muted-foreground mb-2">
-                  {product.category}
+                  {product.category.detail || "Tidak ada kategori"}
                 </p>
-                <div className="flex items-center justify-between">
-                  <span className="text-lg font-heading font-bold text-primary">
-                    {formatPrice(product.price)}
-                  </span>
-                  <span className="text-sm font-caption text-muted-foreground">
-                    per {product.unit}
-                  </span>
-                </div>
               </div>
             </div>
 
@@ -112,15 +131,14 @@ const QuickInquiryModal = ({ isOpen, onClose, product }) => {
                   required
                   placeholder="Masukkan nama lengkap"
                   value={formData.name}
-                  onChange={(e) => handleInputChange('name', e.target.value)}
+                  onChange={(e) => handleInputChange("name", e.target.value)}
                 />
                 <Input
                   label="Email"
                   type="email"
-                  required
                   placeholder="nama@email.com"
                   value={formData.email}
-                  onChange={(e) => handleInputChange('email', e.target.value)}
+                  onChange={(e) => handleInputChange("email", e.target.value)}
                 />
               </div>
 
@@ -131,7 +149,7 @@ const QuickInquiryModal = ({ isOpen, onClose, product }) => {
                   required
                   placeholder="08xxxxxxxxxx"
                   value={formData.phone}
-                  onChange={(e) => handleInputChange('phone', e.target.value)}
+                  onChange={(e) => handleInputChange("phone", e.target.value)}
                 />
                 <Input
                   label={`Jumlah (${product.unit})`}
@@ -140,7 +158,9 @@ const QuickInquiryModal = ({ isOpen, onClose, product }) => {
                   placeholder="1"
                   min="1"
                   value={formData.quantity}
-                  onChange={(e) => handleInputChange('quantity', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("quantity", e.target.value)
+                  }
                 />
               </div>
 
@@ -149,13 +169,17 @@ const QuickInquiryModal = ({ isOpen, onClose, product }) => {
                 type="text"
                 placeholder="Spesifikasi khusus, pertanyaan, atau catatan lainnya..."
                 value={formData.message}
-                onChange={(e) => handleInputChange('message', e.target.value)}
+                onChange={(e) => handleInputChange("message", e.target.value)}
                 description="Opsional - Jelaskan kebutuhan spesifik Anda"
               />
 
               <div className="bg-accent/10 border border-accent/20 rounded-lg p-4">
                 <div className="flex items-start space-x-3">
-                  <Icon name="Info" size={20} className="text-accent mt-0.5 flex-shrink-0" />
+                  <Icon
+                    name="Info"
+                    size={20}
+                    className="text-accent mt-0.5 flex-shrink-0"
+                  />
                   <div>
                     <h4 className="font-heading font-semibold text-foreground mb-1">
                       Informasi Penting
@@ -163,7 +187,9 @@ const QuickInquiryModal = ({ isOpen, onClose, product }) => {
                     <ul className="text-sm font-caption text-muted-foreground space-y-1">
                       <li>• Inquiry akan dikirim melalui WhatsApp</li>
                       <li>• Tim kami akan merespons dalam 1-2 jam kerja</li>
-                      <li>• Harga dapat berubah sesuai kuantitas dan spesifikasi</li>
+                      <li>
+                        • Harga dapat berubah sesuai kuantitas dan spesifikasi
+                      </li>
                       <li>• Konsultasi gratis untuk proyek besar</li>
                     </ul>
                   </div>
@@ -188,7 +214,7 @@ const QuickInquiryModal = ({ isOpen, onClose, product }) => {
                   iconName="MessageCircle"
                   iconPosition="left"
                 >
-                  {isSubmitting ? 'Mengirim...' : 'Kirim via WhatsApp'}
+                  {isSubmitting ? "Mengirim..." : "Kirim via WhatsApp"}
                 </Button>
               </div>
             </form>

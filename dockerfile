@@ -1,5 +1,5 @@
 # Tahap 1: Build React
-FROM node:18-alpine as builder
+FROM node:18-alpine AS builder
 
 WORKDIR /app
 
@@ -16,7 +16,8 @@ FROM nginx:stable-alpine
 RUN rm -rf /usr/share/nginx/html/*
 
 # Copy hasil build ke Nginx folder
-COPY --from=builder /app/build /usr/share/nginx/html
+COPY --from=builder /app/dist /usr/share/nginx/html
+
 
 # Tambahkan routing untuk SPA (React Router)
 COPY nginx.conf /etc/nginx/conf.d/default.conf

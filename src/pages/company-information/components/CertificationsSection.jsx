@@ -12,7 +12,7 @@ const CertificationsSection = () => {
     },
     {
       name: "SNI 03-0409-1989",
-      description: "Standar Nasional Indonesia untuk Aluminum",
+      description: "Standar Nasional Indonesia untuk Aluminium ",
       icon: "Shield",
       verified: true
     },
@@ -31,7 +31,7 @@ const CertificationsSection = () => {
   ];
 
   const qualityStandards = [
-    "Aluminum Grade 6063-T5",
+    "Aluminium  Grade 6063-T5",
     "Ketebalan sesuai standar internasional",
     "Finishing powder coating berkualitas",
     "Uji kekuatan dan daya tahan",
@@ -127,7 +127,7 @@ const CertificationsSection = () => {
             <div className="relative overflow-hidden rounded-xl">
               <Image
                 src="../assets/images/K8.jpg"
-                alt="Quality control process at Sinar Jaya Aluminum"
+                alt="Quality control process at Meisha Aluminium  Kaca"
                 className="w-full h-64 object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>

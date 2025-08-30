@@ -11,15 +11,15 @@ const HeroSection = () => {
           <div className="space-y-6">
             <div className="space-y-4">
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-heading font-bold leading-tight">
-                Sinar Jaya Aluminum
+                Meisha Aluminium  Kaca
               </h1>
               <p className="text-xl lg:text-2xl font-medium opacity-90">
-                Solusi Terpercaya untuk Kebutuhan Aluminum Berkualitas
+                Solusi Terpercaya untuk Kebutuhan Aluminium  Berkualitas
               </p>
             </div>
             
             <p className="text-lg opacity-80 leading-relaxed">
-              Dengan pengalaman lebih dari 15 tahun di industri aluminum, kami telah menjadi mitra terpercaya untuk kontraktor, arsitek, dan pemilik rumah di seluruh Indonesia. Komitmen kami terhadap kualitas dan inovasi menjadikan produk aluminum kami pilihan utama untuk berbagai proyek konstruksi.
+              Dengan pengalaman lebih dari 15 tahun di industri Aluminium , kami telah menjadi mitra terpercaya untuk kontraktor, arsitek, dan pemilik rumah di seluruh Indonesia. Komitmen kami terhadap kualitas dan inovasi menjadikan produk Aluminium  kami pilihan utama untuk berbagai proyek konstruksi.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4">
@@ -49,14 +49,14 @@ const HeroSection = () => {
             <div className="relative overflow-hidden rounded-2xl shadow-elevation-3">
               <Image
                 src="../assets/images/K1.jpeg"
-                alt="Sinar Jaya Aluminum facility and products"
+                alt="Meisha Aluminium  Kaca facility and products"
                 className="w-full h-80 lg:h-96 object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
             </div>
             
             {/* Floating Stats Card */}
-            <div className="absolute -bottom-6 -left-6 bg-card rounded-xl p-6 shadow-elevation-2 border border-border">
+            {/* <div className="absolute -bottom-6 -left-6 bg-card rounded-xl p-6 shadow-elevation-2 border border-border">
               <div className="grid grid-cols-2 gap-4 text-center">
                 <div>
                   <div className="text-2xl font-heading font-bold text-primary">15+</div>
@@ -67,7 +67,7 @@ const HeroSection = () => {
                   <div className="text-sm text-muted-foreground">Proyek Selesai</div>
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

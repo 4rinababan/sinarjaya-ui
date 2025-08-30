@@ -1,20 +1,70 @@
-import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import Icon from '../AppIcon';
-import Button from './Button';
-import Input from './Input';
+import Icon from "../AppIcon";
+import Button from "./Button";
+import Input from "./Input";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { NotificationContext } from "../../context/NotificationContext";
+import { getUserFromToken } from "../../utils/storage";
+import React, { useState, useContext } from "react";
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const location = useLocation();
+  const navigate = useNavigate(); // <- ini yang kamu butuhkan
+  const { notifications } = useContext(NotificationContext);
+  const unreadCount = notifications.filter((n) => !n.read).length;
+  const user = getUserFromToken();
+
+  const userRole = user?.role || "guest"; // fallback kalau tidak ada token
 
   const navigationItems = [
-    { label: 'Beranda', path: '/homepage', icon: 'Home' },
-    { label: 'Katalog Produk', path: '/product-catalog', icon: 'Package' },
-    { label: 'Tentang Kami', path: '/company-information', icon: 'Building2' },
-    { label: 'Kontak', path: '/contact-inquiry', icon: 'Phone' }
+    {
+      label: "Beranda",
+      path: "/homepage",
+      icon: "Home",
+      roles: ["guest", "user"],
+    },
+    {
+      label: "Dashboard",
+      path: "/dashboard",
+      icon: "Dashboard",
+      roles: ["admin"],
+    },
+    {
+      label: "Notifikasi",
+      path: "/notification-page",
+      icon: "Bell",
+      roles: ["guest", "user", "admin"],
+    },
+    {
+      label: "Katalog Produk",
+      path: "/product-catalog",
+      icon: "Package",
+      roles: ["guest", "user"],
+    },
+    {
+      label: "Riwayat Orderan",
+      path: "/order-history",
+      icon: "ShoppingCart",
+      roles: ["guest", "user"],
+    },
+    {
+      label: "Tentang Kami",
+      path: "/company-information",
+      icon: "Building2",
+      roles: ["guest", "user"],
+    },
+    {
+      label: "Setting",
+      path: "/setting-page",
+      icon: "Tools",
+      roles: ["admin"],
+    },
   ];
+
+  const filteredNavigationItems = navigationItems.filter((item) =>
+    item.roles.includes(userRole)
+  );
 
   const isActivePath = (path) => {
     return location.pathname === path;
@@ -23,12 +73,22 @@ const Header = () => {
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      window.location.href = `/search-results?q=${encodeURIComponent(searchQuery)}`;
+      window.location.href = `/search-results?q=${encodeURIComponent(
+        searchQuery
+      )}`;
     }
   };
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const handleAvatarClick = () => {
+    if (user) {
+      navigate("/profile-page"); // user sudah login
+    } else {
+      navigate("/login"); // user belum login
+    }
   };
 
   return (
@@ -38,35 +98,47 @@ const Header = () => {
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <Link to="/homepage" className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+              <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
                 <img
-                    src="/assets/images/logo.png" // atau bisa juga pakai URL
-                    alt="Logo"
-                    className="w-6 h-6 object-contain"
+                  src="/assets/images/logo.png" // atau bisa juga pakai URL
+                  alt="Logo"
+                  className="w-6 h-6 object-contain"
                 />
               </div>
-              <div className="hidden sm:block">
-                <h1 className="text-xl font-heading font-bold text-foreground">
-                  Sinar Jaya Aluminum
+              <div>
+                <h1 className="text-base sm:text-xl font-heading font-bold text-foreground">
+                  Meisha Aluminium Kaca
                 </h1>
                 <p className="text-xs font-caption text-muted-foreground">
-                  Solusi Alumunium
+                  Solusi Aluminium
                 </p>
               </div>
             </Link>
 
             {/* Desktop Navigation */}
             <nav className="hidden lg:flex items-center space-x-8">
-              {navigationItems.map((item) => (
+              {filteredNavigationItems.map((item) => (
                 <Link
                   key={item.path}
                   to={item.path}
                   className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-micro ${
                     isActivePath(item.path)
-                      ? 'text-primary bg-muted' :'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                      ? "text-primary bg-muted"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                   }`}
                 >
-                  <Icon name={item.icon} size={16} />
+                  {item.label === "Notifikasi" ? (
+                    <div className="relative">
+                      <Icon name={item.icon} size={16} />
+                      {unreadCount > 0 && (
+                        <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center">
+                          {unreadCount}
+                        </span>
+                      )}
+                    </div>
+                  ) : (
+                    <Icon name={item.icon} size={16} />
+                  )}
                   <span>{item.label}</span>
                 </Link>
               ))}
@@ -100,7 +172,19 @@ const Header = () => {
               className="lg:hidden"
               aria-label="Toggle mobile menu"
             >
-              <Icon name={isMobileMenuOpen ? 'X' : 'Menu'} size={24} />
+              {isMobileMenuOpen ? (
+                <Icon name="X" size={24} />
+              ) : (
+                <img
+                  src="/assets/images/avatar.jpg"
+                  alt="Avatar"
+                  className="w-8 h-8 rounded-full object-cover"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = "/assets/images/avatar.png"; // fallback ke default
+                  }}
+                />
+              )}
             </Button>
           </div>
         </div>
@@ -109,12 +193,30 @@ const Header = () => {
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
         <div className="fixed inset-0 z-mobile-menu lg:hidden">
-          <div className="fixed inset-0 bg-black/50" onClick={toggleMobileMenu} />
+          <div
+            className="fixed inset-0 bg-black/50"
+            onClick={toggleMobileMenu}
+          />
           <div className="fixed top-0 right-0 h-full w-80 max-w-full bg-card shadow-elevation-3 transform transition-transform duration-300">
             <div className="flex items-center justify-between p-4 border-b border-border">
-              <h2 className="text-lg font-heading font-semibold text-foreground">
-                Menu
-              </h2>
+              <div
+                onClick={handleAvatarClick}
+                className="flex items-center space-x-3 cursor-pointer"
+              >
+                <img
+                  src="/assets/images/avatar.jpg"
+                  alt="Avatar"
+                  className="w-8 h-8 rounded-full object-cover"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = "/assets/images/avatar.png";
+                  }}
+                />
+                <span className="text-sm font-medium text-foreground">
+                  Profil
+                </span>
+              </div>
+
               <Button
                 variant="ghost"
                 size="icon"
@@ -148,17 +250,29 @@ const Header = () => {
             {/* Mobile Navigation */}
             <nav className="p-4">
               <ul className="space-y-2">
-                {navigationItems.map((item) => (
+                {filteredNavigationItems.map((item) => (
                   <li key={item.path}>
                     <Link
                       to={item.path}
                       onClick={toggleMobileMenu}
                       className={`flex items-center space-x-3 px-4 py-3 rounded-lg text-base font-medium transition-micro ${
                         isActivePath(item.path)
-                          ? 'text-primary bg-muted' :'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                          ? "text-primary bg-muted"
+                          : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                       }`}
                     >
-                      <Icon name={item.icon} size={20} />
+                      {item.label === "Notifikasi" ? (
+                        <div className="relative">
+                          <Icon name={item.icon} size={20} />
+                          {unreadCount > 0 && (
+                            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">
+                              {unreadCount}
+                            </span>
+                          )}
+                        </div>
+                      ) : (
+                        <Icon name={item.icon} size={20} />
+                      )}
                       <span>{item.label}</span>
                     </Link>
                   </li>
@@ -176,7 +290,9 @@ const Header = () => {
                   variant="outline"
                   size="sm"
                   className="w-full"
-                  onClick={() => window.open('https://wa.me/6285161628624', '_blank')}
+                  onClick={() =>
+                    window.open("https://wa.me/6281224591336", "_blank")
+                  }
                 >
                   <Icon name="MessageCircle" size={16} className="mr-2" />
                   WhatsApp

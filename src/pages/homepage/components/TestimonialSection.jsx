@@ -13,7 +13,7 @@ const TestimonialSection = () => {
       company: "PT. Bangun Jaya",
       avatar: "https://randomuser.me/api/portraits/men/32.jpg",
       rating: 5,
-      content: `Sinar Jaya Aluminum sudah menjadi partner terpercaya kami selama 8 tahun. Kualitas produk sangat baik dan pelayanan yang memuaskan. Tim mereka selalu responsif dan membantu dalam setiap proyek yang kami kerjakan.`,
+      content: `Meisha Aluminium Kaca sudah menjadi partner terpercaya kami selama 8 tahun. Kualitas produk sangat baik dan pelayanan yang memuaskan. Tim mereka selalu responsif dan membantu dalam setiap proyek yang kami kerjakan.`,
       project: "Pembangunan Perumahan Green Valley",
       date: "Desember 2024"
     },
@@ -24,7 +24,7 @@ const TestimonialSection = () => {
       company: "Studio Arsitektur Modern",
       avatar: "https://randomuser.me/api/portraits/women/44.jpg",
       rating: 5,
-      content: `Produk aluminum dari Sinar Jaya memiliki finishing yang sangat baik dan sesuai dengan standar arsitektur modern. Mereka juga bisa custom sesuai dengan desain yang kita inginkan. Sangat recommended!`,
+      content: `Produk Aluminium dari Sinar Jaya memiliki finishing yang sangat baik dan sesuai dengan standar arsitektur modern. Mereka juga bisa custom sesuai dengan desain yang kita inginkan. Sangat recommended!`,
       project: "Renovasi Kantor Pusat",
       date: "November 2024"
     },
@@ -35,7 +35,7 @@ const TestimonialSection = () => {
       company: "Pribadi",
       avatar: "https://randomuser.me/api/portraits/men/56.jpg",
       rating: 5,
-      content: `Kusen dan pintu aluminum yang saya beli dari Sinar Jaya sangat berkualitas. Sudah 3 tahun tidak ada masalah sama sekali. Harga juga kompetitif dibanding tempat lain. Pelayanan ramah dan profesional.`,
+      content: `Kusen dan pintu Aluminium yang saya beli dari Sinar Jaya sangat berkualitas. Sudah 3 tahun tidak ada masalah sama sekali. Harga juga kompetitif dibanding tempat lain. Pelayanan ramah dan profesional.`,
       project: "Renovasi Rumah Tinggal",
       date: "Oktober 2024"
     }

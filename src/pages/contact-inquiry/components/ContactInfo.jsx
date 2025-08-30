@@ -16,19 +16,19 @@ const ContactInfo = () => {
     {
       icon: 'MessageCircle',
       title: 'WhatsApp',
-      primary: '+62 812-3456-7890',
-      secondary: '+62 813-4567-8901',
+      primary: '+62 81224591336',
+      secondary: '+62 81224591336',
       description: 'Respon cepat 24/7\nChat langsung dengan tim sales',
-      action: () => window.open('https://wa.me/6281234567890?text=Halo, saya tertarik dengan produk aluminum Sinar Jaya', '_blank'),
+      action: () => window.open('https://wa.me/6281224591336?text=Halo, saya tertarik dengan produk Aluminium  Sinar Jaya', '_blank'),
       actionLabel: 'Chat WhatsApp'
     },
     {
       icon: 'Mail',
       title: 'Email',
-      primary: 'info@sinarjayaaluminum.com',
-      secondary: 'sales@sinarjayaaluminum.com',
+      primary: 'info@sinarjayaAluminium .com',
+      secondary: 'sales@sinarjayaAluminium .com',
       description: 'Respon dalam 2-4 jam kerja\nKirim spesifikasi detail proyek',
-      action: () => window.open('mailto:info@sinarjayaaluminum.com?subject=Inquiry Produk Aluminum'),
+      action: () => window.open('mailto:info@sinarjayaAluminium .com?subject=Inquiry Produk Aluminium '),
       actionLabel: 'Kirim Email'
     },
     {
@@ -53,29 +53,29 @@ const ContactInfo = () => {
     {
       platform: 'Instagram',
       icon: 'Instagram',
-      handle: '@sinarjayaaluminum',
-      url: 'https://instagram.com/sinarjayaaluminum',
+      handle: '@sinarjayaAluminium ',
+      url: 'https://instagram.com/sinarjayaAluminium ',
       description: 'Lihat portfolio proyek terbaru'
     },
     {
       platform: 'Facebook',
       icon: 'Facebook',
-      handle: 'Sinar Jaya Aluminum',
-      url: 'https://facebook.com/sinarjayaaluminum',
+      handle: 'Meisha Alumunium Kaca',
+      url: 'https://facebook.com/sinarjayaAluminium ',
       description: 'Update dan promosi terbaru'
     },
     {
       platform: 'YouTube',
       icon: 'Youtube',
-      handle: 'Sinar Jaya Aluminum',
-      url: 'https://youtube.com/@sinarjayaaluminum',
+      handle: 'Meisha Alumunium Kaca',
+      url: 'https://youtube.com/@sinarjayaAluminium ',
       description: 'Video tutorial dan showcase'
     },
     {
       platform: 'LinkedIn',
       icon: 'Linkedin',
-      handle: 'Sinar Jaya Aluminum',
-      url: 'https://linkedin.com/company/sinarjayaaluminum',
+      handle: 'Meisha Alumunium Kaca',
+      url: 'https://linkedin.com/company/sinarjayaAluminium ',
       description: 'Koneksi bisnis dan karir'
     }
   ];
@@ -165,7 +165,7 @@ const ContactInfo = () => {
         <div className="space-y-4">
           <div className="text-sm text-muted-foreground">
             <p className="font-medium text-foreground mb-1">
-              Sinar Jaya Aluminum
+              Meisha Alumunium Kaca
             </p>
             <p>Jl. Industri Raya No. 123</p>
             <p>Kawasan Industri Pulogadung</p>
@@ -177,7 +177,7 @@ const ContactInfo = () => {
               width="100%"
               height="100%"
               loading="lazy"
-              title="Sinar Jaya Aluminum Location"
+              title="Meisha Alumunium Kaca Location"
               referrerPolicy="no-referrer-when-downgrade"
               src="https://www.google.com/maps?q=-6.1944,106.8229&z=15&output=embed"
               className="w-full h-full"

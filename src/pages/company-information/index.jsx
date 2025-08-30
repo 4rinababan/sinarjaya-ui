@@ -20,16 +20,16 @@ const CompanyInformation = () => {
   return (
     <div className="min-h-screen bg-background">
       <Helmet>
-        <title>Tentang Kami - Sinar Jaya Aluminum | Solusi Aluminum Terpercaya Indonesia</title>
+        <title>Tentang Kami - Meisha Aluminium Kaca | Solusi Aluminium  Terpercaya Indonesia</title>
         <meta 
           name="description" 
-          content="Pelajari lebih lanjut tentang Sinar Jaya Aluminum - perusahaan aluminum terpercaya dengan 15+ tahun pengalaman, sertifikasi ISO, dan komitmen terhadap kualitas produk aluminum terbaik di Indonesia."
+          content="Pelajari lebih lanjut tentang Meisha Aluminium Kaca - perusahaan Aluminium  terpercaya dengan 5+ tahun pengalaman, sertifikasi ISO, dan komitmen terhadap kualitas produk Aluminium  terbaik di Indonesia."
         />
-        <meta name="keywords" content="tentang sinar jaya aluminum, perusahaan aluminum indonesia, sertifikasi iso aluminum, sejarah perusahaan aluminum, tim ahli aluminum, fasilitas produksi aluminum" />
-        <meta property="og:title" content="Tentang Kami - Sinar Jaya Aluminum" />
-        <meta property="og:description" content="Perusahaan aluminum terpercaya dengan 15+ tahun pengalaman dan komitmen terhadap kualitas produk aluminum terbaik di Indonesia." />
+        <meta name="keywords" content="tentang Meisha Alumunium Kaca, perusahaan Aluminium  indonesia, sertifikasi iso Aluminium , sejarah perusahaan Aluminium , tim ahli Aluminium , fasilitas produksi Aluminium " />
+        <meta property="og:title" content="Tentang Kami - Meisha Alumunium Kaca" />
+        <meta property="og:description" content="Perusahaan Aluminium  terpercaya dengan 5+ tahun pengalaman dan komitmen terhadap kualitas produk Aluminium  terbaik di Indonesia." />
         <meta property="og:type" content="website" />
-        <link rel="canonical" href="https://sinarjayaaluminum.co.id/company-information" />
+        <link rel="canonical" href="https://sinarjayaAluminium .co.id/company-information" />
       </Helmet>
 
       <Header />
@@ -49,7 +49,7 @@ const CompanyInformation = () => {
         <ValuePropositions />
 
         {/* Certifications Section */}
-        <CertificationsSection />
+        {/* <CertificationsSection /> */}
 
         {/* Company History */}
         {/* <CompanyHistory /> */}
@@ -61,10 +61,10 @@ const CompanyInformation = () => {
         {/* <FacilityShowcase /> */}
 
         {/* Testimonials Section */}
-        <TestimonialsSection />
+        {/* <TestimonialsSection /> */}
 
         {/* Location Section */}
-        <LocationSection />
+        {/* <LocationSection /> */}
       </main>
 
       {/* Footer */}
@@ -85,12 +85,12 @@ const CompanyInformation = () => {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-lg font-heading font-bold">Sinar Jaya Aluminum</h3>
-                  <p className="text-xs opacity-80">Solusi Aluminum Terpercaya</p>
+                  <h3 className="text-lg font-heading font-bold">Meisha Aluminium Kaca</h3>
+                  <p className="text-xs opacity-80">Solusi Aluminium Terpercaya</p>
                 </div>
               </div>
               <p className="text-sm opacity-80 leading-relaxed">
-                Perusahaan aluminum terpercaya dengan 15+ tahun pengalaman melayani kebutuhan konstruksi di Indonesia.
+                Perusahaan Aluminium  terpercaya dengan 5+ tahun pengalaman melayani kebutuhan Se Jabodetabek.
               </p>
             </div>
 
@@ -109,9 +109,9 @@ const CompanyInformation = () => {
             <div>
               <h4 className="font-heading font-semibold mb-4">Kontak</h4>
               <ul className="space-y-2 text-sm">
-                <li className="opacity-80">+62 21 4608 7890</li>
-                <li className="opacity-80">info@sinarjayaaluminum.co.id</li>
-                <li className="opacity-80">Jl. Industri Raya No. 45<br />Jakarta Timur 13260</li>
+                <li className="opacity-80">+62 812 2459 1336</li>
+                <li className="opacity-80">info@meishaalumuniumkaca.com</li>
+                {/* <li className="opacity-80">Jl. Industri Raya No. 45<br />Jakarta Timur 13260</li> */}
               </ul>
             </div>
 
@@ -128,7 +128,7 @@ const CompanyInformation = () => {
 
           <div className="border-t border-primary-foreground/20 mt-8 pt-8 text-center">
             <p className="text-sm opacity-80">
-              © {new Date().getFullYear()} Sinar Jaya Aluminum. Semua hak dilindungi.
+              © {new Date().getFullYear()} Meisha Aluminium Kaca. Semua hak dilindungi.
             </p>
           </div>
         </div>

@@ -8,7 +8,7 @@ const FacilityShowcase = () => {
   const facilities = [
     {
       title: "Fasilitas Produksi",
-      description: "Area produksi modern dengan teknologi terdepan untuk menghasilkan produk aluminum berkualitas tinggi",
+      description: "Area produksi modern dengan teknologi terdepan untuk menghasilkan produk Aluminium  berkualitas tinggi",
       images: [
         {
           src: "https://images.pexels.com/photos/1108101/pexels-photo-1108101.jpeg",
@@ -40,7 +40,7 @@ const FacilityShowcase = () => {
         }
       ],
       features: [
-        "Uji kekuatan tarik aluminum",
+        "Uji kekuatan tarik Aluminium ",
         "Pengujian ketahanan korosi",
         "Analisis komposisi material",
         "Sertifikasi setiap batch produksi"
@@ -232,7 +232,7 @@ const FacilityShowcase = () => {
           
           <div className="grid md:grid-cols-5 gap-4">
             {[
-              { icon: "Package", title: "Material Input", desc: "Bahan baku aluminum berkualitas" },
+              { icon: "Package", title: "Material Input", desc: "Bahan baku Aluminium  berkualitas" },
               { icon: "Settings", title: "Processing", desc: "Cutting & forming presisi" },
               { icon: "Palette", title: "Finishing", desc: "Powder coating & anodizing" },
               { icon: "Shield", title: "Quality Check", desc: "Inspeksi kualitas berlapis" },

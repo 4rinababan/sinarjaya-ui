@@ -1,22 +1,23 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import Header from '../../components/ui/Header';
-import Breadcrumb from '../../components/ui/Breadcrumb';
-import Icon from '../../components/AppIcon';
-import Button from '../../components/ui/Button';
-import Input from '../../components/ui/Input';
-import FilterPanel from './components/FilterPanel';
-import FilterChips from './components/FilterChips';
-import SortDropdown from './components/SortDropdown';
-import ProductGrid from './components/ProductGrid';
-import QuickInquiryModal from './components/QuickInquiryModal';
+import React, { useState, useEffect, useCallback } from "react";
+import { useSearchParams } from "react-router-dom";
+import Header from "../../components/ui/Header";
+import Breadcrumb from "../../components/ui/Breadcrumb";
+import Icon from "../../components/AppIcon";
+import Button from "../../components/ui/Button";
+import Input from "../../components/ui/Input";
+import FilterPanel from "./components/FilterPanel";
+import FilterChips from "./components/FilterChips";
+import SortDropdown from "./components/SortDropdown";
+import ProductGrid from "./components/ProductGrid";
+import QuickInquiryModal from "./components/QuickInquiryModal";
+import { productService } from "./../../api/productService"; // ✅ pakai service
 
 const ProductCatalog = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
+  const [searchQuery, setSearchQuery] = useState(searchParams.get("q") || "");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [currentSort, setCurrentSort] = useState('relevance');
-  const [viewMode, setViewMode] = useState('grid');
+  const [currentSort, setCurrentSort] = useState("relevance");
+  const [viewMode, setViewMode] = useState("grid");
   const [loading, setLoading] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isInquiryModalOpen, setIsInquiryModalOpen] = useState(false);
@@ -24,278 +25,215 @@ const ProductCatalog = () => {
   const [hasMore, setHasMore] = useState(true);
 
   const [filters, setFilters] = useState({
-    categories: [],
+    categories: [], // bisa nama / id (dari query param)
     materials: [],
     finishes: [],
-    priceRange: { min: '', max: '' },
-    inStock: false
+    priceRange: { min: "", max: "" },
+    inStock: false,
   });
 
-  const [products, setProducts] = useState([]);
-
-  // Mock product data
-  const mockProducts = [
-    {
-      id: 1,
-      name: "Profil Aluminum L 40x40x3mm",
-      category: "Profil Aluminum",
-      price: 85000,
-      originalPrice: 95000,
-      unit: "batang",
-      stock: 150,
-      rating: 4.8,
-      image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400",
-      isNew: true,
-      material: "6061",
-      finish: "natural"
-    },
-    {
-      id: 2,
-      name: "Plat Aluminum 1mm x 1200 x 2400",
-      category: "Plat Aluminum",
-      price: 450000,
-      unit: "lembar",
-      stock: 45,
-      rating: 4.6,
-      image: "https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?w=400",
-      isNew: false,
-      material: "5052",
-      finish: "mill-finish"
-    },
-    {
-      id: 3,
-      name: "Pipa Aluminum Round 25mm x 2mm",
-      category: "Pipa Aluminum",
-      price: 125000,
-      unit: "batang",
-      stock: 8,
-      rating: 4.7,
-      image: "https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=400",
-      isNew: false,
-      material: "6063",
-      finish: "anodized"
-    },
-    {
-      id: 4,
-      name: "Sudut Aluminum 50x50x5mm",
-      category: "Sudut Aluminum",
-      price: 95000,
-      originalPrice: 110000,
-      unit: "batang",
-      stock: 0,
-      rating: 4.5,
-      image: "https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=400",
-      isNew: false,
-      material: "6061",
-      finish: "powder-coated"
-    },
-    {
-      id: 5,
-      name: "Strip Aluminum 20x3mm",
-      category: "Strip Aluminum",
-      price: 35000,
-      unit: "batang",
-      stock: 200,
-      rating: 4.4,
-      image: "https://images.unsplash.com/photo-1565814329452-e1efa11c5b89?w=400",
-      isNew: true,
-      material: "1100",
-      finish: "natural"
-    },
-    {
-      id: 6,
-      name: "Kawat Aluminum 2.5mm",
-      category: "Kawat Aluminum",
-      price: 65000,
-      unit: "kg",
-      stock: 75,
-      rating: 4.3,
-      image: "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400",
-      isNew: false,
-      material: "1100",
-      finish: "natural"
-    },
-    {
-      id: 7,
-      name: "Profil Aluminum U 30x30x3mm",
-      category: "Profil Aluminum",
-      price: 75000,
-      unit: "batang",
-      stock: 120,
-      rating: 4.6,
-      image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400",
-      isNew: false,
-      material: "6063",
-      finish: "anodized"
-    },
-    {
-      id: 8,
-      name: "Plat Aluminum 2mm x 1000 x 2000",
-      category: "Plat Aluminum",
-      price: 650000,
-      unit: "lembar",
-      stock: 25,
-      rating: 4.8,
-      image: "https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?w=400",
-      isNew: true,
-      material: "6061",
-      finish: "mill-finish"
-    }
-  ];
+  const [allProducts, setAllProducts] = useState([]); // semua produk dari API
+  const [products, setProducts] = useState([]); // produk yg ditampilkan (paging)
 
   const breadcrumbItems = [
-    { label: 'Beranda', href: '/homepage' },
-    { label: 'Katalog Produk' }
+    { label: "Beranda", href: "/homepage" },
+    { label: "Katalog Produk" },
   ];
 
-  const filterProducts = useCallback((productList) => {
-    let filtered = [...productList];
+  // helper: ambil nama kategori
+  const getCategoryName = (product) =>
+    typeof product.category === "string"
+      ? product.category
+      : product.category?.name || "";
 
-    // Search filter
-    if (searchQuery) {
-      filtered = filtered.filter(product =>
-        product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        product.category.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
+  // 🔹 Fetch produk pakai productService
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setLoading(true);
+      try {
+        const res = await productService.getAll(); // bebas, bisa pagination di sini juga
+        setAllProducts(res.data || []);
+      } catch (err) {
+        // console.error("Gagal fetch produk:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProducts();
+  }, []);
 
-    // Category filter
-    if (filters.categories.length > 0) {
-      filtered = filtered.filter(product => {
-        const categoryMap = {
-          'profil': 'Profil Aluminum',
-          'plat': 'Plat Aluminum',
-          'pipa': 'Pipa Aluminum',
-          'sudut': 'Sudut Aluminum',
-          'strip': 'Strip Aluminum',
-          'kawat': 'Kawat Aluminum'
-        };
-        return filters.categories.some(cat => categoryMap[cat] === product.category);
-      });
-    }
+  // 🔹 Filtering
+  const filterProducts = useCallback(
+    (productList) => {
+      let filtered = [...productList];
 
-    // Material filter
-    if (filters.materials.length > 0) {
-      filtered = filtered.filter(product =>
-        filters.materials.includes(product.material)
-      );
-    }
+      // search query (nama produk / kategori)
+      if (searchQuery) {
+        const q = searchQuery.toLowerCase();
+        filtered = filtered.filter(
+          (p) =>
+            (p.name || "").toLowerCase().includes(q) ||
+            getCategoryName(p).toLowerCase().includes(q)
+        );
+      }
 
-    // Finish filter
-    if (filters.finishes.length > 0) {
-      filtered = filtered.filter(product =>
-        filters.finishes.includes(product.finish)
-      );
-    }
+      // kategori filter (id atau nama)
+      if (filters.categories.length > 0) {
+        filtered = filtered.filter((p) =>
+          filters.categories.some(
+            (cat) =>
+              String(cat) === String(p.category_id) ||
+              cat.toLowerCase() === getCategoryName(p).toLowerCase()
+          )
+        );
+      }
 
-    // Price range filter
-    if (filters.priceRange.min || filters.priceRange.max) {
-      filtered = filtered.filter(product => {
-        const min = filters.priceRange.min ? parseInt(filters.priceRange.min) : 0;
-        const max = filters.priceRange.max ? parseInt(filters.priceRange.max) : Infinity;
-        return product.price >= min && product.price <= max;
-      });
-    }
+      // material
+      if (filters.materials.length > 0) {
+        filtered = filtered.filter((p) =>
+          filters.materials.includes(p.material)
+        );
+      }
 
-    // Stock filter
-    if (filters.inStock) {
-      filtered = filtered.filter(product => product.stock > 0);
-    }
+      // finish
+      if (filters.finishes.length > 0) {
+        filtered = filtered.filter((p) => filters.finishes.includes(p.finish));
+      }
 
-    return filtered;
-  }, [searchQuery, filters]);
+      // price range
+      if (filters.priceRange.min || filters.priceRange.max) {
+        filtered = filtered.filter((p) => {
+          const min = filters.priceRange.min
+            ? parseInt(filters.priceRange.min, 10)
+            : 0;
+          const max = filters.priceRange.max
+            ? parseInt(filters.priceRange.max, 10)
+            : Infinity;
+          const price = Number(p.price || 0);
+          return price >= min && price <= max;
+        });
+      }
 
-  const sortProducts = useCallback((productList) => {
-    const sorted = [...productList];
+      // stock
+      if (filters.inStock) {
+        filtered = filtered.filter((p) => (p.stock || 0) > 0);
+      }
 
-    switch (currentSort) {
-      case 'price-low':
-        return sorted.sort((a, b) => a.price - b.price);
-      case 'price-high':
-        return sorted.sort((a, b) => b.price - a.price);
-      case 'popularity':
-        return sorted.sort((a, b) => b.rating - a.rating);
-      case 'newest':
-        return sorted.sort((a, b) => (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0));
-      case 'name-asc':
-        return sorted.sort((a, b) => a.name.localeCompare(b.name));
-      case 'name-desc':
-        return sorted.sort((a, b) => b.name.localeCompare(a.name));
-      default:
-        return sorted;
-    }
-  }, [currentSort]);
+      return filtered;
+    },
+    [searchQuery, filters]
+  );
 
-  const loadProducts = useCallback(async (page = 1, reset = false) => {
-    setLoading(true);
+  // 🔹 Sorting
+  const sortProducts = useCallback(
+    (list) => {
+      const sorted = [...list];
+      switch (currentSort) {
+        case "price-low":
+          return sorted.sort(
+            (a, b) => Number(a.price || 0) - Number(b.price || 0)
+          );
+        case "price-high":
+          return sorted.sort(
+            (a, b) => Number(b.price || 0) - Number(a.price || 0)
+          );
+        case "popularity":
+          return sorted.sort(
+            (a, b) => Number(b.rating || 0) - Number(a.rating || 0)
+          );
+        case "newest":
+          return sorted.sort(
+            (a, b) => new Date(b.created_at) - new Date(a.created_at)
+          );
+        case "name-asc":
+          return sorted.sort((a, b) =>
+            (a.name || "").localeCompare(b.name || "")
+          );
+        case "name-desc":
+          return sorted.sort((a, b) =>
+            (b.name || "").localeCompare(a.name || "")
+          );
+        default:
+          return sorted;
+      }
+    },
+    [currentSort]
+  );
 
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 800));
+  // 🔹 Pagination logic
+  const loadProducts = useCallback(
+    (page = 1, reset = false) => {
+      const filtered = filterProducts(allProducts);
+      const sorted = sortProducts(filtered);
 
-    const filtered = filterProducts(mockProducts);
-    const sorted = sortProducts(filtered);
-    
-    const itemsPerPage = 12;
-    const startIndex = (page - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    const pageProducts = sorted.slice(startIndex, endIndex);
+      const itemsPerPage = 12;
+      const startIndex = (page - 1) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      const pageProducts = sorted.slice(startIndex, endIndex);
 
-    if (reset) {
-      setProducts(pageProducts);
-    } else {
-      setProducts(prev => [...prev, ...pageProducts]);
-    }
+      if (reset) {
+        setProducts(pageProducts);
+      } else {
+        setProducts((prev) => [...prev, ...pageProducts]);
+      }
 
-    setHasMore(endIndex < sorted.length);
-    setLoading(false);
-  }, [filterProducts, sortProducts]);
+      setHasMore(endIndex < sorted.length);
+    },
+    [allProducts, filterProducts, sortProducts]
+  );
 
+  // reload saat filter / sort berubah
   useEffect(() => {
     setCurrentPage(1);
     loadProducts(1, true);
-  }, [loadProducts]);
+  }, [allProducts, filters, searchQuery, currentSort, loadProducts]);
 
+  // 🔹 sync search param `q`
   useEffect(() => {
-    const query = searchParams.get('q');
-    if (query) {
-      setSearchQuery(query);
+    const query = searchParams.get("q");
+    if (query) setSearchQuery(query);
+  }, [searchParams]);
+
+  // 🔹 sync search param `category`
+  useEffect(() => {
+    const categoryParam = searchParams.get("category");
+    if (categoryParam) {
+      setFilters((prev) => ({ ...prev, categories: [categoryParam] }));
     }
   }, [searchParams]);
 
+  // 🔹 handler
   const handleSearch = (e) => {
     e.preventDefault();
-    if (searchQuery.trim()) {
-      setSearchParams({ q: searchQuery });
-    } else {
-      setSearchParams({});
-    }
+    if (searchQuery.trim()) setSearchParams({ q: searchQuery });
+    else setSearchParams({});
   };
 
-  const handleFiltersChange = (newFilters) => {
-    setFilters(newFilters);
-  };
+  const handleFiltersChange = (newFilters) => setFilters(newFilters);
 
   const handleRemoveFilter = (type, value) => {
     const newFilters = { ...filters };
-
     switch (type) {
-      case 'category':
-        newFilters.categories = newFilters.categories.filter(id => id !== value);
+      case "category":
+        newFilters.categories = newFilters.categories.filter(
+          (c) => c !== value
+        );
         break;
-      case 'material':
-        newFilters.materials = newFilters.materials.filter(id => id !== value);
+      case "material":
+        newFilters.materials = newFilters.materials.filter((m) => m !== value);
         break;
-      case 'finish':
-        newFilters.finishes = newFilters.finishes.filter(id => id !== value);
+      case "finish":
+        newFilters.finishes = newFilters.finishes.filter((f) => f !== value);
         break;
-      case 'priceRange':
-        newFilters.priceRange = { min: '', max: '' };
+      case "priceRange":
+        newFilters.priceRange = { min: "", max: "" };
         break;
-      case 'inStock':
+      case "inStock":
         newFilters.inStock = false;
         break;
+      default:
+        break;
     }
-
     setFilters(newFilters);
   };
 
@@ -304,8 +242,8 @@ const ProductCatalog = () => {
       categories: [],
       materials: [],
       finishes: [],
-      priceRange: { min: '', max: '' },
-      inStock: false
+      priceRange: { min: "", max: "" },
+      inStock: false,
     });
   };
 
@@ -320,23 +258,21 @@ const ProductCatalog = () => {
     loadProducts(nextPage, false);
   };
 
-  const filteredProducts = filterProducts(mockProducts);
-  const totalProducts = filteredProducts.length;
+  const totalProducts = filterProducts(allProducts).length;
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      
       <main className="pt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <Breadcrumb items={breadcrumbItems} />
-
           <div className="mb-8">
             <h1 className="text-3xl font-heading font-bold text-foreground mb-2">
-              Katalog Produk Aluminum
+              Katalog Produk Aluminium
             </h1>
             <p className="text-muted-foreground">
-              Temukan berbagai produk aluminum berkualitas tinggi untuk kebutuhan konstruksi dan industri Anda.
+              Temukan berbagai produk Aluminium berkualitas tinggi untuk
+              kebutuhan konstruksi dan industri Anda.
             </p>
           </div>
 
@@ -346,7 +282,7 @@ const ProductCatalog = () => {
               <div className="relative">
                 <Input
                   type="search"
-                  placeholder="Cari produk aluminum..."
+                  placeholder="Cari produk Aluminium ..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-12 pr-4"
@@ -386,31 +322,28 @@ const ProductCatalog = () => {
                   >
                     Filter
                   </Button>
-                  
                   <div className="text-sm font-caption text-muted-foreground">
                     {totalProducts} produk ditemukan
                   </div>
                 </div>
-
                 <div className="flex items-center space-x-3">
                   <SortDropdown
                     currentSort={currentSort}
                     onSortChange={setCurrentSort}
                   />
-                  
                   <div className="flex items-center border border-border rounded-lg overflow-hidden">
                     <Button
-                      variant={viewMode === 'grid' ? 'default' : 'ghost'}
+                      variant={viewMode === "grid" ? "default" : "ghost"}
                       size="sm"
-                      onClick={() => setViewMode('grid')}
+                      onClick={() => setViewMode("grid")}
                       className="rounded-none border-0"
                     >
                       <Icon name="Grid3X3" size={16} />
                     </Button>
                     <Button
-                      variant={viewMode === 'list' ? 'default' : 'ghost'}
+                      variant={viewMode === "list" ? "default" : "ghost"}
                       size="sm"
-                      onClick={() => setViewMode('list')}
+                      onClick={() => setViewMode("list")}
                       className="rounded-none border-0"
                     >
                       <Icon name="List" size={16} />
@@ -443,7 +376,7 @@ const ProductCatalog = () => {
                     iconName="ChevronDown"
                     iconPosition="right"
                   >
-                    {loading ? 'Memuat...' : 'Muat Lebih Banyak'}
+                    {loading ? "Memuat..." : "Muat Lebih Banyak"}
                   </Button>
                 </div>
               )}

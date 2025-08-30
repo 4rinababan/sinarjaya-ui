@@ -1,141 +1,86 @@
-import React from 'react';
-import Image from '../../../components/AppImage';
-import Icon from '../../../components/AppIcon';
+import React, { useEffect, useState } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import "swiper/css/navigation";
+import { Navigation } from "swiper/modules";
+import Icon from "../../../components/AppIcon";
+import { categoryService } from "./../../../api/categoryService"; // <-- import service
 
-const CategorySection = () => {
-  const categories = [
-    {
-      id: 1,
-      name: "Profil Aluminum",
-      description: "Berbagai jenis profil untuk konstruksi",
-      image: "../../../assets/images/K5.png",
-      productCount: 45,
-      icon: "Building2"
-    },
-    {
-      id: 2,
-      name: "Jendela Alumunium",
-      description: "jendela aluminum berkualitas",
-      image: "../../../assets/images/K3.jpeg",
-      productCount: 32,
-      icon: "Home"
-    },
-    {
-      id: 3,
-      name: "Pintu Aluminum",
-      description: "Pintu aluminum untuk rumah dan kantor",
-      image: "../../../assets/images/K6.jpeg",
-      productCount: 28,
-      icon: "DoorOpen"
-    },
-    {
-      id: 4,
-      name: "Partisi & Dinding",
-      description: "Sistem partisi aluminum modern",
-      image: "../../../assets/images/K2.jpeg",
-      productCount: 19,
-      icon: "Grid3X3"
-    },
-    {
-      id: 5,
-      name: "Atap & Kanopi",
-      description: "Solusi atap aluminum tahan cuaca",
-      image: "../../assets/images/K4.jpg",
-      productCount: 23,
-      icon: "Umbrella"
-    },
-    {
-      id: 6,
-      name: "Aksesoris",
-      description: "Aksesoris pelengkap aluminum",
-      image: "../assets/images/K7.jpg",
-      productCount: 67,
-      icon: "Settings"
-    }
-  ];
+export default function CategoryCarousel() {
+  const BASE_URL = import.meta.env.VITE_BASE_URL;
+  const [categories, setCategories] = useState([]);
 
-  const handleCategoryClick = (categoryId) => {
-    window.location.href = `/product-catalog?category=${categoryId}`;
-  };
+  useEffect(() => {
+    categoryService
+      .getAll(1, 10)
+      .then((json) => {
+        // console.log("API response:", json); // <--- cek struktur response
+        setCategories(json.data?.data || []);
+      })
+      .catch((err) => console.error("API error:", err));
+  }, []);
 
   return (
-    <section className="py-16 bg-background">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Header */}
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-heading font-bold text-foreground mb-4">
-            Kategori Produk
-          </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Temukan berbagai kategori produk aluminum berkualitas tinggi untuk kebutuhan konstruksi dan renovasi Anda
-          </p>
-        </div>
+    <section className="py-8 bg-background">
+      <div className="max-w-7xl mx-auto px-4">
+        <h2 className="text-2xl font-bold mb-6">Kategori Produk</h2>
 
-        {/* Categories Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+        <Swiper
+          spaceBetween={16}
+          slidesPerView={1.2}
+          navigation={true}
+          modules={[Navigation]}
+          breakpoints={{
+            640: { slidesPerView: 2.2 },
+            1024: { slidesPerView: 3.2 },
+          }}
+        >
           {categories.map((category) => (
-            <div
-              key={category.id}
-              onClick={() => handleCategoryClick(category.id)}
-              className="group bg-card rounded-xl shadow-elevation-1 hover:shadow-elevation-2 transition-smooth cursor-pointer overflow-hidden border border-border"
-            >
-              {/* Category Image */}
-              <div className="relative h-48 overflow-hidden">
-                <Image
-                  src={category.image}
-                  alt={category.name}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-smooth"
-                />
-                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-smooth" />
-                
-                {/* Icon Overlay */}
-                <div className="absolute top-4 right-4 w-12 h-12 bg-white/90 rounded-lg flex items-center justify-center">
-                  <Icon name={category.icon} size={24} className="text-primary" />
-                </div>
-              </div>
-
-              {/* Category Content */}
-              <div className="p-6">
-                <div className="flex items-start justify-between mb-3">
-                  <h3 className="text-xl font-heading font-semibold text-foreground group-hover:text-primary transition-micro">
-                    {category.name}
-                  </h3>
-                  <span className="text-sm font-medium text-muted-foreground bg-muted px-2 py-1 rounded-md">
-                    {category.productCount} produk
-                  </span>
-                </div>
-                
-                <p className="text-muted-foreground mb-4 leading-relaxed">
-                  {category.description}
-                </p>
-
-                {/* View Category Button */}
-                <div className="flex items-center text-primary font-medium group-hover:text-primary/80 transition-micro">
-                  <span className="mr-2">Lihat Produk</span>
-                  <Icon 
-                    name="ArrowRight" 
-                    size={16} 
-                    className="group-hover:translate-x-1 transition-smooth" 
+            <SwiperSlide key={category.id}>
+              <div className="bg-card rounded-xl shadow hover:shadow-lg transition cursor-pointer overflow-hidden border border-border">
+                <div className="relative h-48">
+                  <img
+                    src={`${BASE_URL}/${category.image_path}`}
+                    alt={category.name}
+                    className="w-full h-full object-cover"
                   />
+                  <div className="absolute top-4 right-4 w-12 h-12 bg-white/90 rounded-lg flex items-center justify-center">
+                    <img
+                      src={`${BASE_URL}/${category.icon}`}
+                      alt="icon"
+                      className="w-6 h-6 object-contain"
+                    />
+                  </div>
+                </div>
+                <div className="p-4">
+                  <h3 className="text-lg font-semibold">{category.name}</h3>
+                  <p className="text-sm text-muted-foreground mb-2">
+                    {category.detail}
+                  </p>
+                  <div className="flex items-center text-primary font-medium">
+                    {/* <div
+                      className="flex items-center text-primary font-medium cursor-pointer"
+                      onClick={() => handleClick(category.name)}
+                    ></div>
+                    <span className="mr-1">Lihat Produk</span>
+                    <Icon name="ArrowRight" size={16} /> */}
+
+                    <button
+                      onClick={() =>
+                        (window.location.href = `/product-catalog?category=${category.name}`)
+                      }
+                      className="inline-flex items-center px-8 py-3 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-primary/90 transition-smooth"
+                    >
+                      <span className="mr-1">Lihat Produk</span>
+                      <Icon name="ArrowRight" size={16} />
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
+            </SwiperSlide>
           ))}
-        </div>
-
-        {/* View All Categories Button */}
-        <div className="text-center mt-12">
-          <button
-            onClick={() => window.location.href = '/product-catalog'}
-            className="inline-flex items-center px-8 py-3 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-primary/90 transition-smooth"
-          >
-            <span className="mr-2">Lihat Semua Kategori</span>
-            <Icon name="ArrowRight" size={18} />
-          </button>
-        </div>
+        </Swiper>
       </div>
     </section>
   );
-};
-
-export default CategorySection;
+}

@@ -1,0 +1,11 @@
+version: "3.8"
+
+services:
+  react-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: react-app
+    ports:
+      - "3000:80" # 3000 di host → 80 di container (Nginx)
+    restart: unless-stopped

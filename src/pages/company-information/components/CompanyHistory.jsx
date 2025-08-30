@@ -4,15 +4,15 @@ import Icon from '../../../components/AppIcon';
 const CompanyHistory = () => {
   const milestones = [
     {
-      year: "2008",
+      year: "2020",
       title: "Pendirian Perusahaan",
-      description: "Sinar Jaya Aluminum didirikan dengan visi menjadi distributor aluminum terpercaya di Indonesia",
+      description: "Meisha Aluminium  Kaca didirikan dengan visi menjadi distributor Aluminium  terpercaya di Jakarta dan Sekitarnya",
       icon: "Building2"
     },
     {
       year: "2011",
       title: "Ekspansi Produk",
-      description: "Menambah lini produk kusen, pintu, dan jendela aluminum dengan kualitas premium",
+      description: "Menambah lini produk kusen, pintu, dan jendela Aluminium  dengan kualitas premium",
       icon: "Package"
     },
     {
@@ -36,7 +36,7 @@ const CompanyHistory = () => {
     {
       year: "2023",
       title: "Teknologi Ramah Lingkungan",
-      description: "Mengadopsi teknologi produksi ramah lingkungan dan program daur ulang aluminum",
+      description: "Mengadopsi teknologi produksi ramah lingkungan dan program daur ulang Aluminium ",
       icon: "Leaf"
     }
   ];
@@ -46,10 +46,10 @@ const CompanyHistory = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <h2 className="text-3xl lg:text-4xl font-heading font-bold text-foreground mb-4">
-            Perjalanan Sinar Jaya Aluminum
+            Perjalanan Meisha Aluminium  Kaca
           </h2>
           <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-            Dari perusahaan kecil hingga menjadi pemimpin industri aluminum di Indonesia
+            Dari perusahaan kecil hingga menjadi pemimpin industri Aluminium  di Indonesia
           </p>
         </div>
 
@@ -111,7 +111,7 @@ const CompanyHistory = () => {
         <div className="mt-16 text-center">
           <div className="bg-primary/5 rounded-2xl p-8 border border-primary/20">
             <h3 className="text-2xl font-heading font-bold text-foreground mb-4">
-              Sinar Jaya Aluminum Hari Ini
+              Meisha Aluminium  Kaca Hari Ini
             </h3>
             <div className="grid md:grid-cols-4 gap-6">
               <div className="text-center">

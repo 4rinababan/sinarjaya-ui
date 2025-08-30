@@ -259,7 +259,7 @@ const ContactForm = () => {
               name="phone"
               value={formData.phone}
               onChange={handleInputChange}
-              placeholder="+62 812-3456-7890"
+              placeholder="+62 812 2459 1336"
               required
               error={errors.phone}
               description="Format: +62 atau 08xx-xxxx-xxxx"
@@ -499,7 +499,7 @@ const ContactForm = () => {
             <Button
               type="button"
               variant="outline"
-              onClick={() => window.open('https://wa.me/6281234567890?text=Halo, saya tertarik dengan produk aluminum Sinar Jaya', '_blank')}
+              onClick={() => window.open('https://wa.me/6281224591336?text=Halo, saya tertarik dengan produk aluminum Sinar Jaya', '_blank')}
               iconName="MessageCircle"
               iconPosition="left"
               className="flex-1 sm:flex-none"

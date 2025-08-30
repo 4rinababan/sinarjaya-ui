@@ -12,9 +12,9 @@ const Footer = () => {
 
     ],
     products: [
-      { label: "Profil Aluminum", href: "/product-catalog?category=1" },
-      { label: "Kusen & Jendela", href: "/product-catalog?category=2" },
-      { label: "Pintu Aluminum", href: "/product-catalog?category=3" },
+      { label: "Pintu Aluminium", href: "/product-catalog?category=1" },
+      { label: "Jendela Aluminium", href: "/product-catalog?category=2" },
+      { label: "Kusen Aluminum", href: "/product-catalog?category=3" },
       { label: "Partisi & Dinding", href: "/product-catalog?category=4" }
     ],
     services: [
@@ -51,7 +51,7 @@ const Footer = () => {
           {/* Company Info */}
           <div className="lg:col-span-2">
             <div className="flex items-center space-x-3 mb-6">
-              <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center">
+              {/* <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center">
                 <svg
                   viewBox="0 0 24 24"
                   className="w-7 h-7 text-primary-foreground"
@@ -60,25 +60,25 @@ const Footer = () => {
                   <path d="M12 2L2 7v10c0 5.55 3.84 9.739 9 11 5.16-1.261 9-5.45 9-11V7l-10-5z"/>
                   <path d="M8 11l2 2 4-4" stroke="currentColor" strokeWidth="2" fill="none"/>
                 </svg>
-              </div>
+              </div> */}
               <div>
                 <h3 className="text-xl font-heading font-bold">
-                  Sinar Jaya Aluminum
+                  Meisha Aluminium Kaca
                 </h3>
                 <p className="text-sm opacity-80">
-                  Solusi Aluminum Terpercaya
+                  Solusi Aluminium Terpercaya
                 </p>
               </div>
             </div>
             
             <p className="text-sm opacity-90 leading-relaxed mb-6">
-              Sejak 1998, kami telah menjadi pelopor dalam industri aluminum di Indonesia. 
+              Sejak 2020, kami telah menjadi pelopor dalam industri Aluminium di Jabodetabek. 
               Memberikan solusi terbaik untuk kebutuhan konstruksi dan arsitektur modern 
               dengan kualitas terjamin dan pelayanan terpercaya.
             </p>
 
             {/* Contact Info */}
-            <div className="space-y-3">
+            {/* <div className="space-y-3">
               <div className="flex items-center space-x-3">
                 <Icon name="MapPin" size={16} className="opacity-80" />
                 <span className="text-sm">
@@ -93,7 +93,7 @@ const Footer = () => {
                 <Icon name="Mail" size={16} className="opacity-80" />
                 <span className="text-sm">info@sinarjayaaluminum.com</span>
               </div>
-            </div>
+            </div> */}
           </div>
 
           {/* Company Links */}
@@ -199,7 +199,7 @@ const Footer = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
             <div className="text-sm opacity-80 text-center md:text-left">
-              © {currentYear} Sinar Jaya Aluminum. Seluruh hak cipta dilindungi undang-undang.
+              © {currentYear} Meisha Aluminium Kaca. Seluruh hak cipta dilindungi undang-undang.
             </div>
             
             <div className="flex items-center space-x-6 text-sm">
