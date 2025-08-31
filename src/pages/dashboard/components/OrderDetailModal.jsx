@@ -84,7 +84,11 @@ export default function OrderDetailModal({ order, onClose, onUpdateStatus }) {
         {/* Button WhatsApp */}
         {order.user.phone && (
           <a
-            href={`https://wa.me/${order.user.phone.replace(/[^0-9]/g, "")}`}
+            href={`https://wa.me/${
+              order.user.phone.startsWith("08")
+                ? "62" + order.user.phone.slice(1).replace(/[^0-9]/g, "")
+                : order.user.phone.replace(/[^0-9]/g, "")
+            }`}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white font-semibold px-4 py-2 rounded mt-4 transition-colors"
