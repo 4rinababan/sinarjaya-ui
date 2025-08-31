@@ -516,7 +516,9 @@ export default function Dashboard() {
 
 // Komponen kecil untuk card statistik
 const StatCard = ({ title, value, gradient }) => (
-  <div className={`p-4 rounded-xl shadow text-white ${gradient}`}>
+  <div
+    className={`p-4 rounded-xl shadow text-white bg-gradient-to-r ${gradient}`}
+  >
     <p className="text-sm">{title}</p>
     <p className="text-2xl font-bold">{value}</p>
   </div>
