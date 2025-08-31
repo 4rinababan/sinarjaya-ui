@@ -33,9 +33,8 @@ const fmtDate = (d) => {
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const dropdownRef = useRef(null);
 
-  // SSE context fallback
+  // SSE context
   const { notifications: sseNotifs = [] } = useContext(NotificationContext);
   const sseUnreadCount = sseNotifs.filter((n) => !n.read).length;
 
@@ -68,6 +67,8 @@ export default function Dashboard() {
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
+
+  const dropdownRef = useRef(null);
 
   // Fetch dashboard stats & chart
   const fetchDashboard = async () => {
@@ -145,14 +146,14 @@ export default function Dashboard() {
     setFilteredOrders(results);
   }, [searchTerm, statusFilter, orders]);
 
-  // Notification SSE + initial fetch
+  // **Fetch initial notifications saat page load**
   useEffect(() => {
-    const fetchInitialNotifications = async () => {
+    const fetchInitialNotif = async () => {
       setNotifLoading(true);
       setNotifError("");
       try {
         const res = await notificationService.getNotificationAdmin();
-        const list = res?.data || res || [];
+        const list = res?.data || [];
         const normalized = (Array.isArray(list) ? list : []).map((n) => ({
           id: n.id ?? n.ID ?? n._id ?? String(Math.random()),
           message: n.message ?? n.text ?? "-",
@@ -173,43 +174,13 @@ export default function Dashboard() {
         setNotifLoading(false);
       }
     };
-
-    fetchInitialNotifications();
-
-    // SSE listener
-    const eventSource = new EventSource("/api/notification/sse");
-    eventSource.onmessage = (event) => {
-      try {
-        const newNotif = JSON.parse(event.data);
-        setNotifItems((prev) => [
-          {
-            id: newNotif.id ?? String(Math.random()),
-            message: newNotif.message ?? "-",
-            read: false,
-            created_at: newNotif.created_at ?? new Date().toISOString(),
-            order_code: newNotif.order_code ?? null,
-            order_id: newNotif.order_id ?? null,
-            name: newNotif.name ?? "-",
-            qty: newNotif.qty ?? "-",
-            product: newNotif.product ?? "-",
-          },
-          ...prev,
-        ]);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
-    eventSource.onerror = (err) => {
-      console.error("SSE Error:", err);
-      eventSource.close();
-    };
-
-    return () => eventSource.close();
+    fetchInitialNotif();
   }, []);
 
   // Notification dropdown toggle
-  const toggleNotif = () => setNotifOpen((prev) => !prev);
+  const toggleNotif = () => {
+    setNotifOpen((prev) => !prev);
+  };
 
   // Klik luar untuk menutup dropdown
   useEffect(() => {
@@ -245,8 +216,12 @@ export default function Dashboard() {
   const unreadCount = notifOpen ? localUnread : localUnread || sseUnreadCount;
 
   // Table actions
-  const handlePrevPage = () => page > 1 && setPage(page - 1);
-  const handleNextPage = () => page < totalPages && setPage(page + 1);
+  const handlePrevPage = () => {
+    if (page > 1) setPage(page - 1);
+  };
+  const handleNextPage = () => {
+    if (page < totalPages) setPage(page + 1);
+  };
   const handleViewOrder = (order) => {
     setSelectedOrder(order);
     setIsModalOpen(true);
@@ -301,6 +276,7 @@ export default function Dashboard() {
               )}
             </button>
 
+            {/* Dropdown panel responsive */}
             {notifOpen && (
               <div className="absolute right-0 mt-2 w-screen max-w-[90vw] md:max-w-[380px] bg-white rounded-xl shadow-xl border border-gray-200 z-50">
                 <div className="px-4 py-3 border-b">
@@ -478,22 +454,24 @@ export default function Dashboard() {
                     <span
                       className={`px-2 py-1 rounded text-white ${
                         order.status === "Selesai"
-                          ? "bg-green-500"
+                          ? "bg-purple-500"
                           : order.status === "Diproses"
-                          ? "bg-blue-500"
+                          ? "bg-green-500"
+                          : order.status === "Dibatalkan"
+                          ? "bg-red-500"
                           : "bg-yellow-500"
                       }`}
                     >
                       {order.status}
                     </span>
                   </td>
-                  <td className="py-3 px-4">{fmtDate(order.createdAt)}</td>
+                  <td className="py-3 px-4">{fmtDate(order.created_at)}</td>
                   <td className="py-3 px-4">
                     <button
-                      className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
                       onClick={() => handleViewOrder(order)}
+                      className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 text-sm"
                     >
-                      Lihat
+                      Detail
                     </button>
                   </td>
                 </tr>
@@ -503,21 +481,21 @@ export default function Dashboard() {
         </div>
 
         {/* Pagination */}
-        <div className="mt-4 flex justify-end gap-2">
+        <div className="flex justify-between mt-4 items-center">
           <button
             onClick={handlePrevPage}
-            disabled={page <= 1}
-            className="px-3 py-1 border rounded disabled:opacity-50"
+            disabled={page === 1}
+            className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
           >
             Prev
           </button>
-          <span className="px-2 py-1">
-            {page} / {totalPages}
+          <span>
+            Page {page} / {totalPages}
           </span>
           <button
             onClick={handleNextPage}
-            disabled={page >= totalPages}
-            className="px-3 py-1 border rounded disabled:opacity-50"
+            disabled={page === totalPages}
+            className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
           >
             Next
           </button>
@@ -536,15 +514,10 @@ export default function Dashboard() {
   );
 }
 
-function StatCard({ title, value, gradient }) {
-  return (
-    <div
-      className={`p-4 rounded-xl shadow text-white ${
-        gradient ? `bg-gradient-to-r ${gradient}` : "bg-gray-700"
-      }`}
-    >
-      <p className="text-sm">{title}</p>
-      <p className="text-2xl font-bold">{value}</p>
-    </div>
-  );
-}
+// Komponen kecil untuk card statistik
+const StatCard = ({ title, value, gradient }) => (
+  <div className={`p-4 rounded-xl shadow text-white ${gradient}`}>
+    <p className="text-sm">{title}</p>
+    <p className="text-2xl font-bold">{value}</p>
+  </div>
+);
