@@ -33,6 +33,7 @@ const fmtDate = (d) => {
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const dropdownRef = useRef(null);
 
   // SSE context fallback
   const { notifications: sseNotifs = [] } = useContext(NotificationContext);
@@ -67,8 +68,6 @@ export default function Dashboard() {
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
-
-  const dropdownRef = useRef(null);
 
   // Fetch dashboard stats & chart
   const fetchDashboard = async () => {
@@ -146,11 +145,9 @@ export default function Dashboard() {
     setFilteredOrders(results);
   }, [searchTerm, statusFilter, orders]);
 
-  // Notification dropdown toggle
-  const toggleNotif = async () => {
-    const nextOpen = !notifOpen;
-    setNotifOpen(nextOpen);
-    if (nextOpen) {
+  // Notification SSE + initial fetch
+  useEffect(() => {
+    const fetchInitialNotifications = async () => {
       setNotifLoading(true);
       setNotifError("");
       try {
@@ -175,8 +172,44 @@ export default function Dashboard() {
       } finally {
         setNotifLoading(false);
       }
-    }
-  };
+    };
+
+    fetchInitialNotifications();
+
+    // SSE listener
+    const eventSource = new EventSource("/api/notification/sse");
+    eventSource.onmessage = (event) => {
+      try {
+        const newNotif = JSON.parse(event.data);
+        setNotifItems((prev) => [
+          {
+            id: newNotif.id ?? String(Math.random()),
+            message: newNotif.message ?? "-",
+            read: false,
+            created_at: newNotif.created_at ?? new Date().toISOString(),
+            order_code: newNotif.order_code ?? null,
+            order_id: newNotif.order_id ?? null,
+            name: newNotif.name ?? "-",
+            qty: newNotif.qty ?? "-",
+            product: newNotif.product ?? "-",
+          },
+          ...prev,
+        ]);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    eventSource.onerror = (err) => {
+      console.error("SSE Error:", err);
+      eventSource.close();
+    };
+
+    return () => eventSource.close();
+  }, []);
+
+  // Notification dropdown toggle
+  const toggleNotif = () => setNotifOpen((prev) => !prev);
 
   // Klik luar untuk menutup dropdown
   useEffect(() => {
@@ -212,12 +245,8 @@ export default function Dashboard() {
   const unreadCount = notifOpen ? localUnread : localUnread || sseUnreadCount;
 
   // Table actions
-  const handlePrevPage = () => {
-    if (page > 1) setPage(page - 1);
-  };
-  const handleNextPage = () => {
-    if (page < totalPages) setPage(page + 1);
-  };
+  const handlePrevPage = () => page > 1 && setPage(page - 1);
+  const handleNextPage = () => page < totalPages && setPage(page + 1);
   const handleViewOrder = (order) => {
     setSelectedOrder(order);
     setIsModalOpen(true);
@@ -272,7 +301,6 @@ export default function Dashboard() {
               )}
             </button>
 
-            {/* Dropdown panel responsive */}
             {notifOpen && (
               <div className="absolute right-0 mt-2 w-screen max-w-[90vw] md:max-w-[380px] bg-white rounded-xl shadow-xl border border-gray-200 z-50">
                 <div className="px-4 py-3 border-b">
@@ -329,23 +357,6 @@ export default function Dashboard() {
                               </>
                             )}
                           </div>
-                          <div className="mt-2">
-                            {/* <button
-                              onClick={() => {
-                                const relatedOrder =
-                                  orders.find((o) => o.id === n.order_id) ||
-                                  orders.find((o) => o.id === n.order?.id);
-                                if (relatedOrder) {
-                                  handleViewOrder(relatedOrder);
-                                } else {
-                                  alert("Order tidak ditemukan");
-                                }
-                              }}
-                              className="bg-blue-500 text-white text-xs px-2 py-1 rounded hover:bg-blue-600"
-                            >
-                              Lihat Detail
-                            </button> */}
-                          </div>
                         </div>
                         {!n.read && (
                           <span className="ml-2 text-[10px] font-medium text-blue-600 px-2 py-0.5 rounded-full bg-blue-100">
@@ -354,18 +365,6 @@ export default function Dashboard() {
                         )}
                       </button>
                     ))}
-                </div>
-                <div className="px-4 py-2 border-t text-right">
-                  {/* <button
-                    type="button"
-                    className="text-sm text-blue-600 hover:underline"
-                    onClick={() => {
-                      setNotifOpen(false);
-                      navigate("/notification-page");
-                    }}
-                  >
-                    Lihat semua
-                  </button> */}
                 </div>
               </div>
             )}
@@ -479,22 +478,22 @@ export default function Dashboard() {
                     <span
                       className={`px-2 py-1 rounded text-white ${
                         order.status === "Selesai"
-                          ? "bg-purple-500"
-                          : order.status === "Diproses"
                           ? "bg-green-500"
+                          : order.status === "Diproses"
+                          ? "bg-blue-500"
                           : "bg-yellow-500"
                       }`}
                     >
                       {order.status}
                     </span>
                   </td>
-                  <td className="py-3 px-4">{fmtDate(order.created_at)}</td>
+                  <td className="py-3 px-4">{fmtDate(order.createdAt)}</td>
                   <td className="py-3 px-4">
                     <button
+                      className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
                       onClick={() => handleViewOrder(order)}
-                      className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 text-sm"
                     >
-                      Detail
+                      Lihat
                     </button>
                   </td>
                 </tr>
@@ -504,25 +503,28 @@ export default function Dashboard() {
         </div>
 
         {/* Pagination */}
-        <div className="flex justify-end mt-4 gap-2">
+        <div className="mt-4 flex justify-end gap-2">
           <button
-            disabled={page === 1}
             onClick={handlePrevPage}
-            className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
+            disabled={page <= 1}
+            className="px-3 py-1 border rounded disabled:opacity-50"
           >
             Prev
           </button>
-          <span className="px-3 py-1">{page}</span>
+          <span className="px-2 py-1">
+            {page} / {totalPages}
+          </span>
           <button
-            disabled={page === totalPages}
             onClick={handleNextPage}
-            className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
+            disabled={page >= totalPages}
+            className="px-3 py-1 border rounded disabled:opacity-50"
           >
             Next
           </button>
         </div>
       </div>
 
+      {/* Modal */}
       {isModalOpen && selectedOrder && (
         <OrderDetailModal
           order={selectedOrder}
@@ -534,11 +536,15 @@ export default function Dashboard() {
   );
 }
 
-const StatCard = ({ title, value, gradient }) => (
-  <div
-    className={`p-4 rounded-xl shadow text-white bg-gradient-to-r ${gradient}`}
-  >
-    <p className="text-sm">{title}</p>
-    <p className="text-2xl font-bold">{value}</p>
-  </div>
-);
+function StatCard({ title, value, gradient }) {
+  return (
+    <div
+      className={`p-4 rounded-xl shadow text-white ${
+        gradient ? `bg-gradient-to-r ${gradient}` : "bg-gray-700"
+      }`}
+    >
+      <p className="text-sm">{title}</p>
+      <p className="text-2xl font-bold">{value}</p>
+    </div>
+  );
+}
