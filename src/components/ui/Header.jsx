@@ -17,6 +17,47 @@ const Header = () => {
 
   const userRole = user?.role || "guest"; // fallback kalau tidak ada token
 
+  // Helper function untuk bikin initials
+  const getInitials = (name) => {
+    if (!name) return "";
+    const words = name.trim().split(" ");
+    if (words.length === 1) return words[0][0].toUpperCase();
+    return (words[0][0] + words[words.length - 1][0]).toUpperCase();
+  };
+
+  // Avatar component
+  const Avatar = ({ user, size = 32 }) => {
+    const style = `w-${size} h-${size} rounded-full flex items-center justify-center bg-blue-500 text-white font-semibold`;
+
+    if (user?.is_active) {
+      if (user.photo_url) {
+        return (
+          <img
+            src={user.photo_url}
+            alt={user.name || "Avatar"}
+            className={`w-${size} h-${size} rounded-full object-cover`}
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = "/assets/images/avatar.png";
+            }}
+          />
+        );
+      } else {
+        // Tampilkan initials
+        return <div className={style}>{getInitials(user.name)}</div>;
+      }
+    }
+
+    // Default avatar untuk guest atau inactive
+    return (
+      <img
+        src="/assets/images/avatar.png"
+        alt="Default Avatar"
+        className={`w-${size} h-${size} rounded-full object-cover`}
+      />
+    );
+  };
+
   const navigationItems = [
     {
       label: "Beranda",
@@ -34,7 +75,7 @@ const Header = () => {
       label: "Notifikasi",
       path: "/notification-page",
       icon: "Bell",
-      roles: ["guest", "user", "admin"],
+      roles: ["guest", "user"],
     },
     {
       label: "Katalog Produk",
@@ -203,15 +244,7 @@ const Header = () => {
                 onClick={handleAvatarClick}
                 className="flex items-center space-x-3 cursor-pointer"
               >
-                <img
-                  src="/assets/images/avatar.jpg"
-                  alt="Avatar"
-                  className="w-8 h-8 rounded-full object-cover"
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src = "/assets/images/avatar.png";
-                  }}
-                />
+                <Avatar user={user} size={32} />
                 <span className="text-sm font-medium text-foreground">
                   Profil
                 </span>
