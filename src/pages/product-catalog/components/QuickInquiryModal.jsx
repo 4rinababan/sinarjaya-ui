@@ -107,7 +107,9 @@ const QuickInquiryModal = ({ isOpen, onClose, product }) => {
             <div className="flex items-start space-x-4 p-4 bg-muted/30 rounded-lg mb-6">
               <div className="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0">
                 <Image
-                  src={`${BASE_URL}/${product.images}`}
+                  src={
+                    `${BASE_URL}/${product.images?.[0]}` || "/placeholder.png"
+                  }
                   alt={product.name}
                   className="w-full h-full object-cover"
                 />
