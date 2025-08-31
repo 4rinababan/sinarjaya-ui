@@ -34,7 +34,6 @@ const ProductTable = ({ products, onEdit, onDelete }) => {
         <thead className="bg-gray-100">
           <tr>
             <th className="p-2 text-left">Name</th>
-            <th className="p-2 text-left">Detail</th>
             <th className="p-2 text-left">Images</th>
             <th className="p-2 text-left">Category</th>
             <th className="p-2 text-left">Actions</th>
@@ -44,7 +43,6 @@ const ProductTable = ({ products, onEdit, onDelete }) => {
           {products.map((product) => (
             <tr key={product.id} className="border-t">
               <td className="p-2">{product.name}</td>
-              <td className="p-2">{product.detail}</td>
               <td className="p-2">
                 <button
                   onClick={() => handleShowImages(product.images)}
