@@ -19,6 +19,7 @@ const Header = () => {
   const { notifications } = useContext(NotificationContext);
   const unreadCount = notifications.filter((n) => !n.read).length;
   const user = getUserFromToken();
+  console.log(user);
 
   const userRole = user?.role || "guest"; // fallback kalau tidak ada token
 

@@ -8,12 +8,12 @@ export const userService = {
 
   createUser: (payload) => request("/users", {
     method: "POST",
-    body: JSON.stringify(payload),
+    body: payload,
   },false),
 
   createAccount: (payload) => request("/user-accounts", {
     method: "POST",
-    body: JSON.stringify(payload),
+    body: payload,
   },false),
 
   checkUserActive: (id) => 
@@ -24,7 +24,7 @@ export const userService = {
   updatePasswordUserAccount: (payload) =>
   request("/user-accounts/update-password", {
     method: "PATCH",
-    body: JSON.stringify(payload),
+    body: payload,
   }, true),
   // updatePasswordUserAccount: (payload) =>
   //   request("/user-accounts/password", { method: "PUT", body: JSON.stringify(payload) }, true),
