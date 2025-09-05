@@ -7,16 +7,29 @@ const CategoryModal = ({ onClose, onSaved, data }) => {
   const [detail, setDetail] = useState(data?.detail || "");
   const [image, setImage] = useState(null);
   // const [icon, setIcon] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
-    const formData = new FormData();
-    formData.append("name", name);
-    formData.append("detail", detail);
-    if (image) formData.append("image_path", image);
-    // if (icon) formData.append("icon", icon);
+    try {
+      setLoading(true);
 
-    await axios.post(`${BASE_URL}/api/categories`, formData);
-    onSaved();
+      const formData = new FormData();
+      formData.append("name", name);
+      formData.append("detail", detail);
+      if (image) formData.append("image_path", image);
+
+      await axios.post(`${BASE_URL}/api/categories`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      onSaved();
+      onClose();
+    } catch (error) {
+      console.error("Upload failed:", error);
+      alert("Gagal menyimpan kategori");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
