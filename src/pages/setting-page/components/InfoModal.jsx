@@ -99,7 +99,7 @@ const InfoModal = ({ isEdit, data, onClose, onSaved }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("🔧 handleSubmit dipanggil");
+    // console.log("🔧 handleSubmit dipanggil");
     // console.log(e);
     const payload = {
       phone: form.phone,
@@ -110,14 +110,14 @@ const InfoModal = ({ isEdit, data, onClose, onSaved }) => {
       name: form.name,
       detail: form.detail,
     };
-    console.log(payload);
+    // console.log(payload);
     try {
       const formData = new FormData();
       Object.entries(payload).forEach(([key, val]) =>
         formData.append(key, val)
       );
       if (form.photo) {
-        formData.append("photo", form.photo);
+        formData.append("image_path", form.photo);
       }
 
       await infoService.updateInfo(formData);
