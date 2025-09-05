@@ -89,23 +89,27 @@ const ProductWidget = () => {
         }
       }
 
+      const config = {
+        headers: { "Content-Type": "multipart/form-data" },
+        onUploadProgress: (event) => {
+          if (event.total > 0) {
+            const percent = Math.round((event.loaded * 100) / event.total);
+            setProgress(percent);
+          } else {
+            // ✅ Fallback kalau event.total = 0 (mobile issue)
+            setProgress((prev) => (prev < 95 ? prev + 5 : prev));
+          }
+        },
+      };
+
       if (editId) {
-        await productService.update(editId, data, {
-          onUploadProgress: (event) => {
-            const percent = Math.round((event.loaded * 100) / event.total);
-            setProgress(percent);
-          },
-        });
+        await productService.update(editId, data, config);
       } else {
-        await productService.create(data, {
-          onUploadProgress: (event) => {
-            const percent = Math.round((event.loaded * 100) / event.total);
-            setProgress(percent);
-          },
-        });
+        await productService.create(data, config);
       }
 
       // ✅ Biar user sempat lihat progress 100%
+      setProgress(100);
       await new Promise((resolve) => setTimeout(resolve, 300));
 
       fetchProducts();
