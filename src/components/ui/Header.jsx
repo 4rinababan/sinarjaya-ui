@@ -6,6 +6,7 @@ import { NotificationContext } from "../../context/NotificationContext";
 import { getUserFromToken } from "../../utils/storage";
 import React, { useState, useContext, useEffect } from "react";
 import { infoService } from "../../api/infoService"; // import API service
+import { userService } from "../../api/userService";
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 
@@ -84,6 +85,7 @@ const Header = () => {
   useEffect(() => {
     const initProfile = async () => {
       const localUser = getUserFromToken();
+
       if (!localUser?.user_id) return;
 
       try {
@@ -137,7 +139,7 @@ const Header = () => {
   const Avatar = ({ user, size = 32 }) => {
     const style = `w-${size} h-${size} rounded-full flex items-center justify-center bg-blue-500 text-white font-semibold`;
 
-    if (user.photo_url) {
+    if (_user.photo_url) {
       return (
         <img
           src={`${BASE_URL}/${user.photo_url}`}
