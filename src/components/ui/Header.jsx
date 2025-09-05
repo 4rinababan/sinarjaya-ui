@@ -1,59 +1,54 @@
-import React, { useState, useContext, useEffect } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
 import Icon from "../AppIcon";
 import Button from "./Button";
 import Input from "./Input";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { NotificationContext } from "../../context/NotificationContext";
 import { getUserFromToken } from "../../utils/storage";
-import { infoService } from "../../api/infoService";
-import { userService } from "../../api/userService";
+import React, { useState, useContext, useEffect } from "react";
+import { infoService } from "../../api/infoService"; // import API service
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 
-// Default profile kosong
-const mockProfile = {
-  user_id: "",
-  name: "",
-  email: "",
-  phone: "",
-  address: {
-    location: "",
-    street: "",
-    city: "",
-    district: "",
-    subDistrict: "",
-  },
-  photo_url: "",
-  lat: 0,
-  lang: 0,
-  is_active: false,
-};
-
 const Header = () => {
-  const [isActive, setIsActive] = useState(false);
-  const [profile, setProfile] = useState(mockProfile);
   const [info, setInfo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-
   const location = useLocation();
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // <- ini yang kamu butuhkan
   const { notifications } = useContext(NotificationContext);
-  const unreadCount = notifications?.filter((n) => !n.read).length || 0;
+  const unreadCount = notifications.filter((n) => !n.read).length;
   const user = getUserFromToken();
-  const userRole = user?.role || "guest";
 
-  // Buat initial nama
+  const userRole = user?.role || "guest"; // fallback kalau tidak ada token
+
+  // Helper function untuk bikin initials
   const getInitials = (name) => {
     if (!name) return "";
     const words = name.trim().split(" ");
-    return words.length === 1
-      ? words[0][0].toUpperCase()
-      : (words[0][0] + words[words.length - 1][0]).toUpperCase();
+    if (words.length === 1) return words[0][0].toUpperCase();
+    return (words[0][0] + words[words.length - 1][0]).toUpperCase();
   };
 
-  // Mapping API user ke profile
+  const mockProfile = {
+    user_id: "",
+    name: "",
+    email: "",
+    phone: "",
+    address: {
+      location: "",
+      street: "",
+      city: "",
+      district: "",
+      subDistrict: "",
+    },
+    photo_url: "",
+    lat: 0,
+    lang: 0,
+    is_active: false,
+  };
+
+  // ====================== Helper mapping API user ke Profile ======================
   const mapUserToProfile = (_user) => ({
     user_id: _user.id,
     name: _user.name,
@@ -72,7 +67,7 @@ const Header = () => {
     },
   });
 
-  // Cek perbedaan profile
+  // ====================== Cek perbedaan profile ======================
   const isProfileDifferent = (localUser, apiUser) => {
     if (!localUser || !apiUser) return true;
     return (
@@ -85,7 +80,7 @@ const Header = () => {
     );
   };
 
-  // Sync user dengan API
+  // ====================== Load user from token + sync with API ======================
   useEffect(() => {
     const initProfile = async () => {
       const localUser = getUserFromToken();
@@ -98,27 +93,28 @@ const Header = () => {
 
         if (isProfileDifferent(localUser, apiUser)) {
           localStorage.removeItem("jwt");
-          localStorage.setItem("jwt", apiUser); // Simpan token baru
+          saveToken(apiUser);
         }
 
         setProfile(mapUserToProfile(_user));
       } catch (error) {
         console.error("Gagal sinkronisasi user:", error.message);
-        setProfile({ ...mockProfile, ...localUser });
+        setProfile({
+          ...mockProfile,
+          ...localUser,
+          address: {
+            location: localUser.address || "",
+            street: "",
+            city: "",
+            district: "",
+            subDistrict: "",
+          },
+        });
       }
     };
 
     initProfile();
   }, []);
-
-  useEffect(() => {
-    if (profile.user_id) {
-      userService
-        .checkUserActive(profile.user_id)
-        .then((res) => setIsActive(res.data?.is_active || false))
-        .catch(() => setIsActive(false));
-    }
-  }, [profile.user_id]);
 
   useEffect(() => {
     fetchInfo();
@@ -137,45 +133,33 @@ const Header = () => {
     }
   };
 
-  // Avatar Component
+  // Avatar component
   const Avatar = ({ user, size = 32 }) => {
-    const style = {
-      width: `${size}px`,
-      height: `${size}px`,
-    };
+    const style = `w-${size} h-${size} rounded-full flex items-center justify-center bg-blue-500 text-white font-semibold`;
 
-    if (isActive) {
-      if (user.photo_url) {
-        return (
-          <img
-            src={`${BASE_URL}/${user.photo_url}`}
-            alt={user.name || "Avatar"}
-            style={style}
-            className="rounded-full object-cover"
-            onError={(e) => {
-              e.target.onerror = null;
-              e.target.src = "/assets/images/avatar.png";
-            }}
-          />
-        );
-      } else {
-        return (
-          <div
-            style={style}
-            className="rounded-full flex items-center justify-center bg-blue-500 text-white font-semibold"
-          >
-            {getInitials(user.name)}
-          </div>
-        );
-      }
+    if (user.photo_url) {
+      return (
+        <img
+          src={`${BASE_URL}/${user.photo_url}`}
+          alt={user.name || "Avatar"}
+          className={`w-${size} h-${size} rounded-full object-cover`}
+          onError={(e) => {
+            e.target.onerror = null;
+            e.target.src = "/assets/images/avatar.png";
+          }}
+        />
+      );
+    } else {
+      // Tampilkan initials
+      return <div className={style}>{getInitials(user.name)}</div>;
     }
 
+    // Default avatar untuk guest atau inactive
     return (
       <img
         src="/assets/images/avatar.png"
         alt="Default Avatar"
-        style={style}
-        className="rounded-full object-cover"
+        className={`w-${size} h-${size} rounded-full object-cover`}
       />
     );
   };
@@ -229,24 +213,34 @@ const Header = () => {
     item.roles.includes(userRole)
   );
 
-  const isActivePath = (path) => location.pathname === path;
+  const isActivePath = (path) => {
+    return location.pathname === path;
+  };
 
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      navigate(`/search-results?q=${encodeURIComponent(searchQuery)}`);
+      window.location.href = `/search-results?q=${encodeURIComponent(
+        searchQuery
+      )}`;
     }
   };
 
-  const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
 
   const handleAvatarClick = () => {
-    navigate(user ? "/profile-page" : "/login");
+    if (user) {
+      navigate("/profile-page"); // user sudah login
+    } else {
+      navigate("/login"); // user belum login
+    }
   };
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 bg-card border-b border-border z-50">
+      <header className="fixed top-0 left-0 right-0 bg-card border-b border-border z-navigation">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
@@ -260,15 +254,15 @@ const Header = () => {
                         : "/assets/images/logo.png"
                     }
                     alt="Logo"
-                    className="w-12 h-12 object-contain"
+                    className="w-12 h-12 sm:w-14 sm:h-14 object-contain"
                   />
                 )}
               </div>
               <div>
-                <h1 className="text-base sm:text-xl font-bold">
+                <h1 className="text-base sm:text-xl font-heading font-bold text-foreground">
                   {info?.name || "Meisha Aluminium"}
                 </h1>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs font-caption text-muted-foreground">
                   {info?.detail || "Meisha Aluminium Kaca"}
                 </p>
               </div>
@@ -280,23 +274,25 @@ const Header = () => {
                 <Link
                   key={item.path}
                   to={item.path}
-                  className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition ${
+                  className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-micro ${
                     isActivePath(item.path)
                       ? "text-primary bg-muted"
                       : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                   }`}
                 >
-                  <Icon name={item.icon} size={16} />
-                  {item.label === "Notifikasi" && unreadCount > 0 ? (
-                    <span className="relative">
-                      <span>{item.label}</span>
-                      <span className="absolute -top-2 -right-3 bg-red-500 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center">
-                        {unreadCount}
-                      </span>
-                    </span>
+                  {item.label === "Notifikasi" ? (
+                    <div className="relative">
+                      <Icon name={item.icon} size={16} />
+                      {unreadCount > 0 && (
+                        <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center">
+                          {unreadCount}
+                        </span>
+                      )}
+                    </div>
                   ) : (
-                    <span>{item.label}</span>
+                    <Icon name={item.icon} size={16} />
                   )}
+                  <span>{item.label}</span>
                 </Link>
               ))}
             </nav>
@@ -332,7 +328,15 @@ const Header = () => {
               {isMobileMenuOpen ? (
                 <Icon name="X" size={24} />
               ) : (
-                <Avatar user={user || {}} size={32} />
+                <img
+                  src="/assets/images/avatar.jpg"
+                  alt="Avatar"
+                  className="w-8 h-8 rounded-full object-cover"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = "/assets/images/avatar.png"; // fallback ke default
+                  }}
+                />
               )}
             </Button>
           </div>
@@ -341,20 +345,23 @@ const Header = () => {
 
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
-        <div className="fixed inset-0 z-50 lg:hidden">
+        <div className="fixed inset-0 z-mobile-menu lg:hidden">
           <div
             className="fixed inset-0 bg-black/50"
             onClick={toggleMobileMenu}
           />
-          <div className="fixed top-0 right-0 h-full w-80 bg-card shadow-lg transform translate-x-0 transition-transform duration-300">
+          <div className="fixed top-0 right-0 h-full w-80 max-w-full bg-card shadow-elevation-3 transform transition-transform duration-300">
             <div className="flex items-center justify-between p-4 border-b border-border">
               <div
                 onClick={handleAvatarClick}
                 className="flex items-center space-x-3 cursor-pointer"
               >
-                <Avatar user={user || {}} size={40} />
-                <span className="text-sm font-medium">Profil</span>
+                <Avatar user={user} size={32} />
+                <span className="text-sm font-medium text-foreground">
+                  Profil
+                </span>
               </div>
+
               <Button
                 variant="ghost"
                 size="icon"
@@ -366,7 +373,7 @@ const Header = () => {
             </div>
 
             {/* Mobile Search */}
-            <div className="p-4 border-b border-border">
+            <div className="p-4 border-b border-border md:hidden">
               <form onSubmit={handleSearch}>
                 <div className="relative">
                   <Input
@@ -386,33 +393,42 @@ const Header = () => {
             </div>
 
             {/* Mobile Navigation */}
-            <nav className="p-4 space-y-2">
-              {filteredNavigationItems.map((item) => (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  onClick={toggleMobileMenu}
-                  className={`flex items-center space-x-3 px-4 py-3 rounded-lg text-base font-medium transition ${
-                    isActivePath(item.path)
-                      ? "text-primary bg-muted"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                  }`}
-                >
-                  <Icon name={item.icon} size={20} />
-                  <span>{item.label}</span>
-                  {item.label === "Notifikasi" && unreadCount > 0 && (
-                    <span className="ml-auto bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
-                      {unreadCount}
-                    </span>
-                  )}
-                </Link>
-              ))}
+            <nav className="p-4">
+              <ul className="space-y-2">
+                {filteredNavigationItems.map((item) => (
+                  <li key={item.path}>
+                    <Link
+                      to={item.path}
+                      onClick={toggleMobileMenu}
+                      className={`flex items-center space-x-3 px-4 py-3 rounded-lg text-base font-medium transition-micro ${
+                        isActivePath(item.path)
+                          ? "text-primary bg-muted"
+                          : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                      }`}
+                    >
+                      {item.label === "Notifikasi" ? (
+                        <div className="relative">
+                          <Icon name={item.icon} size={20} />
+                          {unreadCount > 0 && (
+                            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">
+                              {unreadCount}
+                            </span>
+                          )}
+                        </div>
+                      ) : (
+                        <Icon name={item.icon} size={20} />
+                      )}
+                      <span>{item.label}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             </nav>
 
-            {/* Contact Info */}
+            {/* Mobile Contact Info */}
             <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-border bg-muted/30">
               <div className="text-center">
-                <p className="text-sm text-muted-foreground mb-2">
+                <p className="text-sm font-caption text-muted-foreground mb-2">
                   Hubungi Kami
                 </p>
                 <Button
