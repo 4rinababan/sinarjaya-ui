@@ -136,7 +136,7 @@ const CategoryWidget = () => {
                 </button>
                 <button
                   className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 text-sm"
-                  nClick={() => handleDelete(cat.id)}
+                  onClick={() => handleDelete(cat.id)}
                 >
                   Hapus
                 </button>
