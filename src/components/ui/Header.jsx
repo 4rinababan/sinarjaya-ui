@@ -19,7 +19,6 @@ const Header = () => {
   const { notifications } = useContext(NotificationContext);
   const unreadCount = notifications.filter((n) => !n.read).length;
   const user = getUserFromToken();
-  console.log(user);
 
   const userRole = user?.role || "guest"; // fallback kalau tidak ada token
 
@@ -56,7 +55,7 @@ const Header = () => {
       if (user.photo_url) {
         return (
           <img
-            src={user.photo_url}
+            src={`${BASE_URL}/${user.photo_url}`}
             alt={user.name || "Avatar"}
             className={`w-${size} h-${size} rounded-full object-cover`}
             onError={(e) => {
