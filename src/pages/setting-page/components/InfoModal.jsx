@@ -117,7 +117,7 @@ const InfoModal = ({ isEdit, data, onClose, onSaved }) => {
         formData.append(key, val)
       );
       if (form.photo) {
-        formData.append("image_path", form.photo);
+        formData.append("photo", form.photo); // ✅ Sama dengan FormFile("photo") di backend
       }
 
       await infoService.updateInfo(formData);
