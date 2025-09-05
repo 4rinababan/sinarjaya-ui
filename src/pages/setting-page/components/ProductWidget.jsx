@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { FaBoxOpen, FaPlus } from "react-icons/fa";
 import ProductModal from "./ProductModal";
-import ProductTable from "./ProductTable"; // ✅ import
+import ProductTable from "./ProductTable";
 import { productService } from "../../../api/productService";
 import { categoryService } from "../../../api/categoryService";
 
@@ -68,36 +68,33 @@ const ProductWidget = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  /** ✅ Batch Upload: Upload per file biar progress lancar */
+  const uploadFiles = async () => {
+    let uploaded = 0;
+    const totalFiles = formData.images.length;
 
-    try {
-      setLoading(true);
-      setProgress(0);
-
-      // ✅ Delay agar UI render dulu
-      await new Promise((resolve) => setTimeout(resolve, 100));
-
+    for (let i = 0; i < totalFiles; i++) {
       const data = new FormData();
       data.append("name", formData.name);
       data.append("detail", formData.detail);
       data.append("category_id", formData.category_id);
-
-      if (formData.images && formData.images.length > 0) {
-        for (let i = 0; i < formData.images.length; i++) {
-          data.append("images", formData.images[i]);
-        }
-      }
+      data.append("images", formData.images[i]);
 
       const config = {
         headers: { "Content-Type": "multipart/form-data" },
         onUploadProgress: (event) => {
           if (event.total > 0) {
             const percent = Math.round((event.loaded * 100) / event.total);
-            setProgress(percent);
+            // Hitung progress total semua file
+            setProgress(
+              Math.min(
+                100,
+                Math.round(((uploaded + percent / 100) / totalFiles) * 100)
+              )
+            );
           } else {
-            // ✅ Fallback kalau event.total = 0 (mobile issue)
-            setProgress((prev) => (prev < 95 ? prev + 5 : prev));
+            // ✅ Fallback kalau total 0
+            setProgress((prev) => (prev < 95 ? prev + 1 : prev));
           }
         },
       };
@@ -108,7 +105,31 @@ const ProductWidget = () => {
         await productService.create(data, config);
       }
 
-      // ✅ Biar user sempat lihat progress 100%
+      uploaded++;
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      setLoading(true);
+      setProgress(0);
+
+      await new Promise((resolve) => setTimeout(resolve, 100)); // Render dulu
+
+      if (formData.images && formData.images.length > 0) {
+        await uploadFiles();
+      } else {
+        // Kalau tidak ada gambar, tetap buat request
+        const data = new FormData();
+        data.append("name", formData.name);
+        data.append("detail", formData.detail);
+        data.append("category_id", formData.category_id);
+
+        await productService.create(data);
+      }
+
       setProgress(100);
       await new Promise((resolve) => setTimeout(resolve, 300));
 
@@ -145,7 +166,7 @@ const ProductWidget = () => {
   };
 
   return (
-    <div className="mb-10">
+    <div className="mb-10 relative">
       <div className="flex justify-between items-center mb-2">
         <h2 className="text-lg font-semibold flex items-center text-purple-800">
           <FaBoxOpen className="text-blue-500 mr-2" /> Produk
@@ -162,7 +183,6 @@ const ProductWidget = () => {
         </button>
       </div>
 
-      {/* ✅ Ganti table manual dengan ProductTable */}
       <ProductTable
         products={products}
         onEdit={handleEdit}
@@ -202,7 +222,7 @@ const ProductWidget = () => {
       )}
 
       {loading && (
-        <div className="absolute inset-0 bg-white bg-opacity-80 flex flex-col items-center justify-center z-50">
+        <div className="fixed inset-0 bg-white bg-opacity-80 flex flex-col items-center justify-center z-50">
           <div className="loader border-4 border-blue-500 border-t-transparent rounded-full w-8 h-8 animate-spin"></div>
           <p className="mt-2 text-gray-700">{progress}%</p>
         </div>
