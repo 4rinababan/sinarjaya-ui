@@ -118,16 +118,33 @@ const ProductWidget = () => {
 
       await new Promise((resolve) => setTimeout(resolve, 100)); // Render dulu
 
-      if (formData.images && formData.images.length > 0) {
-        await uploadFiles();
-      } else {
-        // Kalau tidak ada gambar, tetap buat request
-        const data = new FormData();
-        data.append("name", formData.name);
-        data.append("detail", formData.detail);
-        data.append("category_id", formData.category_id);
+      const data = new FormData();
+      data.append("name", formData.name);
+      data.append("detail", formData.detail);
+      data.append("category_id", formData.category_id);
 
-        await productService.create(data);
+      if (formData.images && formData.images.length > 0) {
+        for (let i = 0; i < formData.images.length; i++) {
+          data.append("images", formData.images[i]); // ✅ semua file dalam 1 FormData
+        }
+      }
+
+      const config = {
+        headers: { "Content-Type": "multipart/form-data" },
+        onUploadProgress: (event) => {
+          if (event.total > 0) {
+            const percent = Math.round((event.loaded * 100) / event.total);
+            setProgress(percent);
+          } else {
+            setProgress((prev) => (prev < 95 ? prev + 1 : prev));
+          }
+        },
+      };
+
+      if (editId) {
+        await productService.update(editId, data, config);
+      } else {
+        await productService.create(data, config);
       }
 
       setProgress(100);
