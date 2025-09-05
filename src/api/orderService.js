@@ -4,7 +4,7 @@ export const orderService = {
   create: (payload) =>
     request("/orders", {
       method: "POST",
-      body: JSON.stringify(payload),
+      body: payload,//JSON.stringify(payload),
     }, false), // ✅ butuh token
     
    getAll: ({ page = 1, limit = 10 } = {}) => {
@@ -18,7 +18,7 @@ export const orderService = {
   updateOrder: (id, payload) =>
   request(`/orders/${id}/status`, {
     method: "PATCH",
-    body: JSON.stringify(payload),
+    body: payload,
   }, true),
 
 };

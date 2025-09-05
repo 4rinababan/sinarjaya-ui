@@ -4,9 +4,14 @@ import Input from "./Input";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { NotificationContext } from "../../context/NotificationContext";
 import { getUserFromToken } from "../../utils/storage";
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
+import { infoService } from "../../api/infoService"; // import API service
+
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 const Header = () => {
+  const [info, setInfo] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const location = useLocation();
@@ -23,6 +28,23 @@ const Header = () => {
     const words = name.trim().split(" ");
     if (words.length === 1) return words[0][0].toUpperCase();
     return (words[0][0] + words[words.length - 1][0]).toUpperCase();
+  };
+
+  useEffect(() => {
+    fetchInfo();
+  }, []);
+
+  const fetchInfo = async () => {
+    try {
+      const response = await infoService.getInfo();
+      if (response?.data) {
+        setInfo(response.data);
+      }
+    } catch (err) {
+      console.error("Error fetching info:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Avatar component
@@ -140,18 +162,24 @@ const Header = () => {
             {/* Logo */}
             <Link to="/homepage" className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-                <img
-                  src="/assets/images/logo.png" // atau bisa juga pakai URL
-                  alt="Logo"
-                  className="w-6 h-6 object-contain"
-                />
+                {!loading && (
+                  <img
+                    src={
+                      info?.image_path
+                        ? `${BASE_URL}/${info.image_path}`
+                        : "/assets/images/logo.png"
+                    }
+                    alt="Logo"
+                    className="w-12 h-12 sm:w-14 sm:h-14 object-contain"
+                  />
+                )}
               </div>
               <div>
                 <h1 className="text-base sm:text-xl font-heading font-bold text-foreground">
-                  Meisha Aluminium Kaca
+                  {info?.name || "Meisha Aluminium"}
                 </h1>
                 <p className="text-xs font-caption text-muted-foreground">
-                  Solusi Aluminium
+                  {info?.detail || "Meisha Aluminium Kaca"}
                 </p>
               </div>
             </Link>

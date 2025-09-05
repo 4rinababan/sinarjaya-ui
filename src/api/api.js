@@ -9,9 +9,11 @@ const request = async (url, options = {}, useAuth = true) => {
       ...(options.headers || {}),
     };
 
-    if (!(options.body instanceof FormData)) {
-      headers["Content-Type"] = "application/json";
-    }
+   if (options.body && !(options.body instanceof FormData)) {
+  headers["Content-Type"] = "application/json";
+  options.body = JSON.stringify(options.body); // ubah JSON manual
+}
+
 
     if (useAuth) {
       const token = getToken();

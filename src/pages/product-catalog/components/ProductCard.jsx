@@ -80,11 +80,11 @@ const ProductCard = ({ product = {}, onQuickInquiry = () => {} }) => {
           <div className="flex items-center space-x-4 text-xs font-caption text-muted-foreground">
             <div className="flex items-center space-x-1">
               <Icon name="Package" size={12} />
-              <span>Stok: {product.stock ?? "-"}</span>
+              <span>Stok: {product.stock ?? "100"}</span>
             </div>
             <div className="flex items-center space-x-1">
               <Icon name="Star" size={12} />
-              <span>{product.rating ?? "-"}</span>
+              <span>{product.rating ?? "5"}</span>
             </div>
           </div>
         </div>

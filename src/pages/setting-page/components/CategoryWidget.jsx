@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { FaFolder, FaPlus, FaEdit, FaTrash } from "react-icons/fa";
 import { categoryService } from "../../../api/categoryService";
-import { FiEdit, FiTrash } from "react-icons/fi";
 
 const API_BASE_URL = import.meta.env.VITE_BASE_URL;
 
@@ -15,7 +14,7 @@ const CategoryWidget = () => {
     name: "",
     detail: "",
     image: null,
-    icon: null,
+    // icon: null,
   });
 
   const limit = 10;
@@ -46,7 +45,7 @@ const CategoryWidget = () => {
     data.append("name", formData.name);
     data.append("detail", formData.detail);
     if (formData.image) data.append("image_path", formData.image);
-    if (formData.icon) data.append("icon", formData.icon);
+    // if (formData.icon) data.append("icon", formData.icon);
 
     try {
       if (editId) {
@@ -56,7 +55,7 @@ const CategoryWidget = () => {
       }
       setShowModal(false);
       setEditId(null);
-      setFormData({ name: "", detail: "", image: null, icon: null });
+      setFormData({ name: "", detail: "", image: null });
       fetchCategories();
     } catch (err) {
       console.error("Save error:", err);
@@ -68,7 +67,7 @@ const CategoryWidget = () => {
       name: cat.name,
       detail: cat.detail,
       image: null,
-      icon: null,
+      // icon: null,
     });
     setEditId(cat.id);
     setShowModal(true);
@@ -94,7 +93,7 @@ const CategoryWidget = () => {
           onClick={() => {
             setShowModal(true);
             setEditId(null);
-            setFormData({ name: "", detail: "", image: null, icon: null });
+            setFormData({ name: "", detail: "", image: null });
           }}
           className="bg-green-600 hover:bg-green-700 text-white text-xs px-2 py-1 rounded flex items-center"
         >
@@ -108,7 +107,6 @@ const CategoryWidget = () => {
             <th className="px-3 py-2">Name</th>
             <th className="px-3 py-2">Detail</th>
             <th className="px-3 py-2">Image</th>
-            <th className="px-3 py-2">Icon</th>
             <th className="px-3 py-2">Action</th>
           </tr>
         </thead>
@@ -123,26 +121,24 @@ const CategoryWidget = () => {
                   className="w-8 h-8 object-cover rounded"
                 />
               </td>
-              <td className="px-3 py-2">
+              {/* <td className="px-3 py-2">
                 <img
                   src={`${API_BASE_URL}/${cat.icon}`}
                   className="w-5 h-5 object-cover rounded"
                 />
-              </td>
-              <td className="p-2 flex flex-wrap gap-2">
+              </td> */}
+              <td className="p-2 flex flex-wrap gap-2 max-w-[100px]">
                 <button
-                  className="flex items-center gap-1 text-blue-500 hover:underline"
+                  className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 text-sm"
                   onClick={() => handleEdit(cat)}
                 >
-                  <FiEdit size={16} />
-                  Edit
+                  Ubah
                 </button>
                 <button
-                  className="flex items-center gap-1 text-red-500 hover:underline"
-                  onClick={() => handleDelete(cat.id)}
+                  className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 text-sm"
+                  nClick={() => handleDelete(cat.id)}
                 >
-                  <FiTrash size={16} />
-                  Delete
+                  Hapus
                 </button>
               </td>
             </tr>
@@ -202,13 +198,13 @@ const CategoryWidget = () => {
                 onChange={handleInputChange}
                 className="w-full"
               />
-              <input
+              {/* <input
                 type="file"
                 name="icon"
                 accept="image/*"
                 onChange={handleInputChange}
                 className="w-full"
-              />
+              /> */}
               <div className="flex justify-end gap-2">
                 <button
                   type="button"

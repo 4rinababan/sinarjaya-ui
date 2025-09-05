@@ -8,7 +8,7 @@ export const authService = {
   login: async ({ phone, password }) => {
     const res = await request("/login", {
       method: "POST",
-      body: JSON.stringify({ phone, password }),
+      body: { phone, password },// JSON.stringify({ phone, password }),
     },false);
 
     if (res.token) {

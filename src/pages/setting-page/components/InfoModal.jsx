@@ -1,8 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { infoService } from "../../../api/infoService";
+import { PencilIcon } from "@heroicons/react/24/solid"; // Gunakan Heroicons atau ganti sendiri
 
 const InfoModal = ({ isEdit, data, onClose, onSaved }) => {
+  const BASE_URL = import.meta.env.VITE_BASE_URL;
   const [loadingLocation, setLoadingLocation] = useState(false);
+  const fileInputRef = useRef(null); // 🔁 Untuk trigger input file lewat ikon
   const [form, setForm] = useState({
     phone: "",
     telephone: "",
@@ -10,18 +13,26 @@ const InfoModal = ({ isEdit, data, onClose, onSaved }) => {
     latitude: null,
     longitude: null,
     useMap: false,
+    name: "",
+    detail: "",
+    photo: null,
+    photoPreview: null,
   });
 
   useEffect(() => {
     if (isEdit && data) {
-      setForm({
+      setForm((prev) => ({
+        ...prev,
         phone: data.phone,
         telephone: data.telephone,
         address: data.address,
         latitude: data.latitude,
         longitude: data.longitude,
         useMap: !!(data.latitude && data.longitude),
-      });
+        name: data.name || "",
+        detail: data.detail || "",
+        photoPreview: data.image_path ? `${BASE_URL}/${data.image_path}` : null,
+      }));
     }
   }, [isEdit, data]);
 
@@ -47,15 +58,14 @@ const InfoModal = ({ isEdit, data, onClose, onSaved }) => {
             longitude: lng,
           }));
 
-          // Ambil alamat detail (reverse geocode)
           try {
             const response = await fetch(
               `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`
             );
-            const data = await response.json();
+            const locationData = await response.json();
             setForm((prev) => ({
               ...prev,
-              address: data.display_name || prev.address,
+              address: locationData.display_name || prev.address,
             }));
           } catch (error) {
             console.error("Error reverse geocoding:", error);
@@ -76,17 +86,41 @@ const InfoModal = ({ isEdit, data, onClose, onSaved }) => {
     }
   };
 
+  const handlePhotoChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setForm((prev) => ({
+        ...prev,
+        photo: file,
+        photoPreview: URL.createObjectURL(file),
+      }));
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log("🔧 handleSubmit dipanggil");
+    // console.log(e);
     const payload = {
       phone: form.phone,
       telephone: form.telephone,
       address: form.address,
       latitude: form.useMap ? parseFloat(form.latitude) : null,
       longitude: form.useMap ? parseFloat(form.longitude) : null,
+      name: form.name,
+      detail: form.detail,
     };
+    console.log(payload);
     try {
-      await infoService.updateInfo(payload);
+      const formData = new FormData();
+      Object.entries(payload).forEach(([key, val]) =>
+        formData.append(key, val)
+      );
+      if (form.photo) {
+        formData.append("photo", form.photo);
+      }
+
+      await infoService.updateInfo(formData);
       onSaved();
     } catch (err) {
       console.error("Error saving info:", err);
@@ -99,7 +133,61 @@ const InfoModal = ({ isEdit, data, onClose, onSaved }) => {
         <h3 className="text-lg font-semibold mb-4">
           {isEdit ? "Edit Informasi" : "Tambah Informasi"}
         </h3>
+
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* 🖼️ Photo Preview + Pencil */}
+          <div className="flex justify-center relative">
+            <img
+              src={form.photoPreview}
+              onError={(e) => {
+                e.target.src =
+                  "https://ui-avatars.com/api/?name=Company&size=100&background=random";
+              }}
+              alt="Company"
+              className="w-24 h-24 rounded-full object-cover shadow border"
+            />
+
+            {/* Pencil Icon to trigger file input */}
+            <button
+              type="button"
+              onClick={() => fileInputRef.current.click()}
+              className="absolute bottom-0 right-[35%] bg-white p-1 rounded-full shadow hover:bg-gray-100"
+              title="Ubah Foto"
+            >
+              <PencilIcon className="w-4 h-4 text-gray-600" />
+            </button>
+          </div>
+
+          {/* Hidden File Input */}
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handlePhotoChange}
+            ref={fileInputRef}
+            className="hidden"
+          />
+
+          {/* Company Name */}
+          <input
+            name="name"
+            value={form.name}
+            onChange={handleChange}
+            placeholder="Nama Perusahaan"
+            className="w-full border p-2 rounded"
+            required
+          />
+
+          {/* Company Detail */}
+          <textarea
+            name="detail"
+            value={form.detail}
+            onChange={handleChange}
+            placeholder="Detail Perusahaan"
+            className="w-full border p-2 rounded resize-none"
+            rows="2"
+          />
+
+          {/* Phone Inputs */}
           <input
             name="phone"
             value={form.phone}
@@ -116,6 +204,8 @@ const InfoModal = ({ isEdit, data, onClose, onSaved }) => {
             className="w-full border p-2 rounded"
             required
           />
+
+          {/* Address */}
           <input
             name="address"
             value={form.address}
@@ -124,6 +214,7 @@ const InfoModal = ({ isEdit, data, onClose, onSaved }) => {
             className="w-full border p-2 rounded"
           />
 
+          {/* Use Map */}
           <div className="flex items-center space-x-2">
             <input
               type="checkbox"
@@ -136,6 +227,7 @@ const InfoModal = ({ isEdit, data, onClose, onSaved }) => {
             )}
           </div>
 
+          {/* Map Preview */}
           {form.useMap && form.latitude && form.longitude && (
             <div className="rounded-lg overflow-hidden">
               <iframe
@@ -150,6 +242,7 @@ const InfoModal = ({ isEdit, data, onClose, onSaved }) => {
             </div>
           )}
 
+          {/* Buttons */}
           <div className="flex justify-end space-x-2">
             <button
               type="button"

@@ -5,9 +5,11 @@ export const infoService = {
 getInfo: () =>
     request("/info", { method: "GET" },false),
 
-  updateInfo: (payload) =>
+  updateInfo: (formData) =>
     request("/info", {
       method: "PUT",
-      body: JSON.stringify(payload),
+      // body: JSON.stringify(payload),
+      body: formData,
     },true),
 }
+

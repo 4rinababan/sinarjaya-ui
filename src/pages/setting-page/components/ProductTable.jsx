@@ -52,20 +52,18 @@ const ProductTable = ({ products, onEdit, onDelete }) => {
                 </button>
               </td>
               <td className="p-2">{product.category?.name || "-"}</td>
-              <td className="p-2 flex flex-wrap gap-2">
+              <td className="p-2 flex flex-wrap gap-2 max-w-[150px]">
                 <button
-                  className="flex items-center gap-1 text-blue-500 hover:underline"
+                  className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 text-sm"
                   onClick={() => onEdit(product)}
                 >
-                  <FiEdit size={16} />
-                  Edit
+                  Ubah
                 </button>
                 <button
-                  className="flex items-center gap-1 text-red-500 hover:underline"
+                  className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 text-sm"
                   onClick={() => handleConfirmDelete(product.id)}
                 >
-                  <FiTrash size={16} />
-                  Delete
+                  Hapus
                 </button>
               </td>
             </tr>

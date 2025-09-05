@@ -2,10 +2,14 @@ import React, { useState } from "react";
 import { FaWhatsapp } from "react-icons/fa";
 
 export default function OrderDetailModal({ order, onClose, onUpdateStatus }) {
-  const [status, setStatus] = useState(order.status);
+  const [status, setStatus] = useState("- Pilih Aksi -");
   const [loading, setLoading] = useState(false);
 
   const handleUpdate = async () => {
+    if (status === "- Pilih Aksi -") {
+      alert("Pilih Status"); // Atau pakai modal custom
+      return; // Jangan lanjutkan proses update
+    }
     setLoading(true);
     await onUpdateStatus(order.id, status.trim());
     setLoading(false);
@@ -17,10 +21,10 @@ export default function OrderDetailModal({ order, onClose, onUpdateStatus }) {
 
   switch (order.status) {
     case "Menunggu konfirmasi":
-      statusOptions = ["Diproses", "Dibatalkan"];
+      statusOptions = ["- Pilih Aksi -", "Diproses", "Dibatalkan"];
       break;
     case "Diproses":
-      statusOptions = ["Selesai", "Dibatalkan"];
+      statusOptions = ["- Pilih Aksi -", "Selesai", "Dibatalkan"];
       break;
     case "Selesai":
     case "Dibatalkan":
@@ -28,6 +32,7 @@ export default function OrderDetailModal({ order, onClose, onUpdateStatus }) {
       break;
     default:
       statusOptions = [
+        "- Pilih Aksi -",
         "Menunggu konfirmasi",
         "Diproses",
         "Selesai",
