@@ -20,6 +20,7 @@ const Header = () => {
   const { notifications } = useContext(NotificationContext);
   const unreadCount = notifications.filter((n) => !n.read).length;
   const user = getUserFromToken();
+  const [profile, setProfile] = useState(mockProfile);
 
   const userRole = user?.role || "guest"; // fallback kalau tidak ada token
 
@@ -139,7 +140,7 @@ const Header = () => {
   const Avatar = ({ user, size = 32 }) => {
     const style = `w-${size} h-${size} rounded-full flex items-center justify-center bg-blue-500 text-white font-semibold`;
 
-    if (_user.photo_url) {
+    if (user && user.photo_url) {
       return (
         <img
           src={`${BASE_URL}/${user.photo_url}`}
@@ -151,12 +152,12 @@ const Header = () => {
           }}
         />
       );
-    } else {
-      // Tampilkan initials
+    } else if (user && user.name) {
+      // Tampilkan inisial
       return <div className={style}>{getInitials(user.name)}</div>;
     }
 
-    // Default avatar untuk guest atau inactive
+    // Default avatar untuk guest
     return (
       <img
         src="/assets/images/avatar.png"
