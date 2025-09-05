@@ -12,6 +12,8 @@ const ProductWidget = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [showModal, setShowModal] = useState(false);
   const [editId, setEditId] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -69,29 +71,52 @@ const ProductWidget = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const data = new FormData();
-    data.append("name", formData.name);
-    data.append("detail", formData.detail);
-    data.append("category_id", formData.category_id);
-
-    if (formData.images && formData.images.length > 0) {
-      for (let i = 0; i < formData.images.length; i++) {
-        data.append("images", formData.images[i]);
-      }
-    }
-
     try {
-      if (editId) {
-        await productService.update(editId, data);
-      } else {
-        await productService.create(data);
+      setLoading(true);
+      setProgress(0);
+
+      // ✅ Delay agar UI render dulu
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      const data = new FormData();
+      data.append("name", formData.name);
+      data.append("detail", formData.detail);
+      data.append("category_id", formData.category_id);
+
+      if (formData.images && formData.images.length > 0) {
+        for (let i = 0; i < formData.images.length; i++) {
+          data.append("images", formData.images[i]);
+        }
       }
+
+      if (editId) {
+        await productService.update(editId, data, {
+          onUploadProgress: (event) => {
+            const percent = Math.round((event.loaded * 100) / event.total);
+            setProgress(percent);
+          },
+        });
+      } else {
+        await productService.create(data, {
+          onUploadProgress: (event) => {
+            const percent = Math.round((event.loaded * 100) / event.total);
+            setProgress(percent);
+          },
+        });
+      }
+
+      // ✅ Biar user sempat lihat progress 100%
+      await new Promise((resolve) => setTimeout(resolve, 300));
+
       fetchProducts();
       setShowModal(false);
       setEditId(null);
       setFormData({ name: "", detail: "", images: "", category_id: "" });
     } catch (err) {
       console.error("Save product error:", err);
+    } finally {
+      setLoading(false);
+      setProgress(0);
     }
   };
 
@@ -170,6 +195,13 @@ const ProductWidget = () => {
           onClose={() => setShowModal(false)}
           isEdit={!!editId}
         />
+      )}
+
+      {loading && (
+        <div className="absolute inset-0 bg-white bg-opacity-80 flex flex-col items-center justify-center z-50">
+          <div className="loader border-4 border-blue-500 border-t-transparent rounded-full w-8 h-8 animate-spin"></div>
+          <p className="mt-2 text-gray-700">{progress}%</p>
+        </div>
       )}
     </div>
   );

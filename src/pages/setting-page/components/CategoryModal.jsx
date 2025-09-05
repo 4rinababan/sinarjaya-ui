@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import imageCompression from "browser-image-compression";
+import { categoryService } from "../../../api/categoryService";
 
 const CategoryModal = ({ onClose, onSaved, data }) => {
   const BASE_URL = import.meta.env.VITE_BASE_URL;
@@ -34,19 +35,21 @@ const CategoryModal = ({ onClose, onSaved, data }) => {
       setLoading(true);
       setProgress(0);
 
+      // ✅ Delay kecil agar React sempat render loading
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
       const formData = new FormData();
       formData.append("name", name);
       formData.append("detail", detail);
       if (image) formData.append("image_path", image);
 
-      await axios.post(`${BASE_URL}/api/categories`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-        onUploadProgress: (event) => {
-          const percent = Math.round((event.loaded * 100) / event.total);
-          setProgress(percent);
-        },
+      await categoryService.create(formData, (event) => {
+        const percent = Math.round((event.loaded * 100) / event.total);
+        setProgress(percent);
       });
 
+      // ✅ Tunggu progress 100% sebelum close
+      await new Promise((resolve) => setTimeout(resolve, 300));
       onSaved();
       onClose();
     } catch (error) {
