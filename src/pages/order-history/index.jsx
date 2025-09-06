@@ -54,15 +54,15 @@ export default function OrderTimeline() {
 
   const handleBack = () => navigate(-1);
 
-  const user = getSavedUser();
-  const decoded = getUserFromToken();
+  // const user = getSavedUser();
+  const user = getUserFromToken();
 
   useEffect(() => {
-    if (!user?.id && !decoded?.id) return;
+    if (!user?.user_id) return;
 
     const fetchOrders = async () => {
       try {
-        const userId = user?.id || decoded?.id;
+        const userId = user?.user_id;
         const data = await orderService.getOrderHistory(userId);
         setOrders(data.data);
         setFilteredOrders(data.data);

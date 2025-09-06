@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getSavedUser, getUserFromToken } from "../utils/storage";
+import {getUserFromToken } from "../utils/storage";
 import {
   Box,
   Typography,
@@ -53,8 +53,8 @@ const NotificationPage = () => {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const navigate = useNavigate();
 
-  const user = getSavedUser();
-  const decoded = getUserFromToken();
+  // const user = getSavedUser();
+  const user = getUserFromToken();
 
   const handleOpenDialog = (order) => {
     setSelectedOrder(order);
@@ -70,7 +70,7 @@ const NotificationPage = () => {
   const fetchNotifications = async () => {
     try {
       setLoading(true);
-      const userId = user?.id || decoded?.id;
+      const userId = user?.user_id;
       const response = await notificationService.getNotification(userId);
 
       // Pastikan format response sesuai

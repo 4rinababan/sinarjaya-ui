@@ -46,9 +46,9 @@ const LoginPage = () => {
 
     let normalized = inputValue;
 
-    if (normalized.startsWith("08")) {
-      normalized = "62" + normalized.slice(1); // ganti 0 jadi 62
-    }
+    // if (normalized.startsWith("08")) {
+    //   normalized = "62" + normalized.slice(1); // ganti 0 jadi 62
+    // }
 
     setPhone(normalized);
   };

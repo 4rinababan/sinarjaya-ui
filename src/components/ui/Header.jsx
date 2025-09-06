@@ -1,171 +1,98 @@
-import Icon from "../AppIcon";
-import Button from "./Button";
-import Input from "./Input";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { NotificationContext } from "../../context/NotificationContext";
+import Icon from "../AppIcon";
 import { getUserFromToken } from "../../utils/storage";
-import React, { useState, useContext, useEffect } from "react";
-import { infoService } from "../../api/infoService"; // import API service
+import { infoService } from "../../api/infoService";
 import { userService } from "../../api/userService";
+import { notificationService } from "../../api/notificationService";
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 const Header = () => {
-  const [info, setInfo] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [unreadCount, setUnreadCount] = useState(0);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [info, setInfo] = useState(null);
+  const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const mobileMenuRef = useRef(null);
   const location = useLocation();
-  const navigate = useNavigate(); // <- ini yang kamu butuhkan
-  const { notifications } = useContext(NotificationContext);
-  const unreadCount = notifications.filter((n) => !n.read).length;
+  const navigate = useNavigate();
+
   const user = getUserFromToken();
-  const [profile, setProfile] = useState(mockProfile);
+  const userRole = user?.role || "guest";
+  // console.log(user);
 
-  const userRole = user?.role || "guest"; // fallback kalau tidak ada token
+  const toggleMobileMenu = () => setIsMobileMenuOpen((prev) => !prev);
 
-  // Helper function untuk bikin initials
+  const fetchUnreadNotifications = async () => {
+    try {
+      if (!user?.user_id) return;
+      const response = await notificationService.getNotification(user.user_id);
+      if (response?.status === 200 && Array.isArray(response.data)) {
+        const count = response.data.filter((n) => !n.read).length;
+        setUnreadCount(count);
+      }
+    } catch (err) {
+      console.error("Error fetching unread notifications:", err);
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate("/login");
+  };
+
+  const handleLogin = () => {
+    navigate("/login");
+  };
+
   const getInitials = (name) => {
     if (!name) return "";
     const words = name.trim().split(" ");
-    if (words.length === 1) return words[0][0].toUpperCase();
-    return (words[0][0] + words[words.length - 1][0]).toUpperCase();
+    return words.length === 1
+      ? words[0][0].toUpperCase()
+      : (words[0][0] + words[words.length - 1][0]).toUpperCase();
   };
 
-  const mockProfile = {
-    user_id: "",
-    name: "",
-    email: "",
-    phone: "",
-    address: {
-      location: "",
-      street: "",
-      city: "",
-      district: "",
-      subDistrict: "",
-    },
-    photo_url: "",
-    lat: 0,
-    lang: 0,
-    is_active: false,
-  };
-
-  // ====================== Helper mapping API user ke Profile ======================
-  const mapUserToProfile = (_user) => ({
-    user_id: _user.id,
-    name: _user.name,
-    email: _user.email,
-    phone: _user.phone,
-    photo_url: _user.photo_url,
-    lat: _user.lat,
-    lang: _user.lang,
-    is_active: _user.is_active,
-    address: {
-      location: _user.address || "",
-      street: "",
-      city: "",
-      district: "",
-      subDistrict: "",
-    },
-  });
-
-  // ====================== Cek perbedaan profile ======================
-  const isProfileDifferent = (localUser, apiUser) => {
-    if (!localUser || !apiUser) return true;
-    return (
-      localUser.name !== apiUser.name ||
-      localUser.email !== apiUser.email ||
-      localUser.address !== apiUser.address ||
-      String(localUser.lat) !== String(apiUser.lat) ||
-      String(localUser.lang) !== String(apiUser.lang) ||
-      (localUser.photo_url || "") !== (apiUser.photo_url || "")
-    );
-  };
-
-  // ====================== Load user from token + sync with API ======================
   useEffect(() => {
-    const initProfile = async () => {
-      const localUser = getUserFromToken();
+    fetchUnreadNotifications();
+  }, []);
 
-      if (!localUser?.user_id) return;
-
+  useEffect(() => {
+    const fetchData = async () => {
       try {
-        const res = await userService.getUserByID(localUser.user_id);
-        const apiUser = res.data.token;
-        const _user = res.data.user;
+        const infoResponse = await infoService.getInfo();
+        if (infoResponse?.data) setInfo(infoResponse.data);
 
-        if (isProfileDifferent(localUser, apiUser)) {
-          localStorage.removeItem("jwt");
-          saveToken(apiUser);
+        if (user && user.user_id) {
+          const userResponse = await userService.getUserByID(user.user_id);
+          // console.log(userResponse);
+          if (userResponse?.data) setUserData(userResponse.data.user);
         }
+      } catch (err) {
+        console.error("Error fetching data:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
-        setProfile(mapUserToProfile(_user));
-      } catch (error) {
-        console.error("Gagal sinkronisasi user:", error.message);
-        setProfile({
-          ...mockProfile,
-          ...localUser,
-          address: {
-            location: localUser.address || "",
-            street: "",
-            city: "",
-            district: "",
-            subDistrict: "",
-          },
-        });
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (
+        mobileMenuRef.current &&
+        !mobileMenuRef.current.contains(e.target) &&
+        !e.target.closest("#hamburger-btn")
+      ) {
+        setIsMobileMenuOpen(false);
       }
     };
 
-    initProfile();
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
   }, []);
-
-  useEffect(() => {
-    fetchInfo();
-  }, []);
-
-  const fetchInfo = async () => {
-    try {
-      const response = await infoService.getInfo();
-      if (response?.data) {
-        setInfo(response.data);
-      }
-    } catch (err) {
-      console.error("Error fetching info:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Avatar component
-  const Avatar = ({ user, size = 32 }) => {
-    const style = `w-${size} h-${size} rounded-full flex items-center justify-center bg-blue-500 text-white font-semibold`;
-
-    if (user && user.photo_url) {
-      return (
-        <img
-          src={`${BASE_URL}/${user.photo_url}`}
-          alt={user.name || "Avatar"}
-          className={`w-${size} h-${size} rounded-full object-cover`}
-          onError={(e) => {
-            e.target.onerror = null;
-            e.target.src = "/assets/images/avatar.png";
-          }}
-        />
-      );
-    } else if (user && user.name) {
-      // Tampilkan inisial
-      return <div className={style}>{getInitials(user.name)}</div>;
-    }
-
-    // Default avatar untuk guest
-    return (
-      <img
-        src="/assets/images/avatar.png"
-        alt="Default Avatar"
-        className={`w-${size} h-${size} rounded-full object-cover`}
-      />
-    );
-  };
 
   const navigationItems = [
     {
@@ -179,12 +106,6 @@ const Header = () => {
       path: "/dashboard",
       icon: "Dashboard",
       roles: ["admin"],
-    },
-    {
-      label: "Notifikasi",
-      path: "/notification-page",
-      icon: "Bell",
-      roles: ["guest", "user"],
     },
     {
       label: "Katalog Produk",
@@ -216,241 +137,195 @@ const Header = () => {
     item.roles.includes(userRole)
   );
 
-  const isActivePath = (path) => {
-    return location.pathname === path;
-  };
+  const isActivePath = (path) => location.pathname === path;
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      window.location.href = `/search-results?q=${encodeURIComponent(
-        searchQuery
-      )}`;
+  const Avatar = ({ size = 60 }) => {
+    const baseClass = `rounded-full object-cover`;
+    const style = { width: size, height: size };
+    // console.log(userData);
+    if (userData?.photo_url) {
+      return (
+        <img
+          src={`${BASE_URL}/${userData.photo_url}`}
+          alt={userData.name || "Avatar"}
+          className={baseClass}
+          style={style}
+          onError={(e) => (e.target.src = "/assets/images/avatar.png")}
+        />
+      );
     }
-  };
 
-  const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen);
-  };
-
-  const handleAvatarClick = () => {
-    if (user) {
-      navigate("/profile-page"); // user sudah login
-    } else {
-      navigate("/login"); // user belum login
+    if (userData?.name) {
+      return (
+        <div
+          className="rounded-full flex items-center justify-center bg-blue-500 text-white font-semibold"
+          style={style}
+        >
+          {getInitials(userData.name)}
+        </div>
+      );
     }
+
+    return (
+      <img
+        src="/assets/images/avatar.png"
+        alt="Avatar"
+        className={baseClass}
+        style={style}
+      />
+    );
   };
 
   return (
-    <>
-      <header className="fixed top-0 left-0 right-0 bg-card border-b border-border z-navigation">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <Link to="/homepage" className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-                {!loading && (
-                  <img
-                    src={
-                      info?.image_path
-                        ? `${BASE_URL}/${info.image_path}`
-                        : "/assets/images/logo.png"
-                    }
-                    alt="Logo"
-                    className="w-12 h-12 sm:w-14 sm:h-14 object-contain"
-                  />
-                )}
-              </div>
-              <div>
-                <h1 className="text-base sm:text-xl font-heading font-bold text-foreground">
-                  {info?.name || "Meisha Aluminium"}
-                </h1>
-                <p className="text-xs font-caption text-muted-foreground">
-                  {info?.detail || "Meisha Aluminium Kaca"}
-                </p>
-              </div>
-            </Link>
-
-            {/* Desktop Navigation */}
-            <nav className="hidden lg:flex items-center space-x-8">
-              {filteredNavigationItems.map((item) => (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-micro ${
-                    isActivePath(item.path)
-                      ? "text-primary bg-muted"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                  }`}
-                >
-                  {item.label === "Notifikasi" ? (
-                    <div className="relative">
-                      <Icon name={item.icon} size={16} />
-                      {unreadCount > 0 && (
-                        <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center">
-                          {unreadCount}
-                        </span>
-                      )}
-                    </div>
-                  ) : (
-                    <Icon name={item.icon} size={16} />
-                  )}
-                  <span>{item.label}</span>
-                </Link>
-              ))}
-            </nav>
-
-            {/* Search Bar */}
-            <div className="hidden md:flex items-center flex-1 max-w-md mx-8">
-              <form onSubmit={handleSearch} className="w-full">
-                <div className="relative">
-                  <Input
-                    type="search"
-                    placeholder="Cari produk aluminum..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-10 pr-4"
-                  />
-                  <Icon
-                    name="Search"
-                    size={18}
-                    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground"
-                  />
-                </div>
-              </form>
+    <header className="fixed top-0 left-0 right-0 bg-card border-b border-border z-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo */}
+          <Link to="/homepage" className="flex items-center space-x-3">
+            {!loading && (
+              <img
+                src={
+                  info?.image_path
+                    ? `${BASE_URL}/${info.image_path}`
+                    : "/assets/images/logo.png"
+                }
+                alt="Logo"
+                className="w-10 h-10 sm:w-12 sm:h-12 object-contain rounded-md"
+              />
+            )}
+            <div>
+              <h1 className="text-lg font-bold text-foreground">
+                {info?.name || "Meisha Aluminium"}
+              </h1>
+              <p className="text-xs text-muted-foreground">
+                {info?.detail || "Meisha Aluminium Kaca"}
+              </p>
             </div>
+          </Link>
 
-            {/* Mobile Menu Button */}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleMobileMenu}
-              className="lg:hidden"
-              aria-label="Toggle mobile menu"
+          <div className="flex items-center space-x-4">
+            {/* Notification Bell */}
+            <button
+              onClick={() => navigate("/notification-page")}
+              className="relative"
             >
-              {isMobileMenuOpen ? (
-                <Icon name="X" size={24} />
-              ) : (
-                <img
-                  src="/assets/images/avatar.jpg"
-                  alt="Avatar"
-                  className="w-8 h-8 rounded-full object-cover"
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src = "/assets/images/avatar.png"; // fallback ke default
-                  }}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6 text-gray-700 hover:text-black"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V4a2 2 0 10-4 0v1.341C8.67 6.165 8 7.388 8 9v5.159c0 .538-.214 1.055-.595 1.436L6 17h5m4 0v1a3 3 0 11-6 0v-1m6 0H9"
                 />
+              </svg>
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full px-1.5">
+                  {unreadCount}
+                </span>
               )}
-            </Button>
+            </button>
+
+            {/* Hamburger Button */}
+            <button
+              id="hamburger-btn"
+              className="text-gray-700 hover:text-black"
+              onClick={toggleMobileMenu}
+            >
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 6h16M4 12h16m-7 6h7"
+                />
+              </svg>
+            </button>
           </div>
         </div>
-      </header>
+      </div>
 
-      {/* Mobile Menu Overlay */}
+      {/* Sidebar Menu */}
       {isMobileMenuOpen && (
-        <div className="fixed inset-0 z-mobile-menu lg:hidden">
-          <div
-            className="fixed inset-0 bg-black/50"
+        <div
+          ref={mobileMenuRef}
+          className="fixed top-0 right-0 w-72 h-full bg-white shadow-lg z-50 p-4 flex flex-col space-y-6"
+        >
+          {/* Close Button */}
+          <button
+            className="self-end text-gray-600 hover:text-black"
             onClick={toggleMobileMenu}
-          />
-          <div className="fixed top-0 right-0 h-full w-80 max-w-full bg-card shadow-elevation-3 transform transition-transform duration-300">
-            <div className="flex items-center justify-between p-4 border-b border-border">
-              <div
-                onClick={handleAvatarClick}
-                className="flex items-center space-x-3 cursor-pointer"
-              >
-                <Avatar user={user} size={32} />
-                <span className="text-sm font-medium text-foreground">
-                  Profil
-                </span>
-              </div>
+          >
+            ✕
+          </button>
 
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={toggleMobileMenu}
-                aria-label="Close menu"
-              >
-                <Icon name="X" size={24} />
-              </Button>
+          {/* Avatar + Nama User */}
+          <div className="flex flex-col items-center space-y-2">
+            <div
+              className="cursor-pointer"
+              onClick={() => {
+                if (userData) {
+                  navigate("/profile-page");
+                }
+              }}
+            >
+              <Avatar size={70} />
             </div>
-
-            {/* Mobile Search */}
-            <div className="p-4 border-b border-border md:hidden">
-              <form onSubmit={handleSearch}>
-                <div className="relative">
-                  <Input
-                    type="search"
-                    placeholder="Cari produk aluminum..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-10 pr-4"
-                  />
-                  <Icon
-                    name="Search"
-                    size={18}
-                    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground"
-                  />
-                </div>
-              </form>
-            </div>
-
-            {/* Mobile Navigation */}
-            <nav className="p-4">
-              <ul className="space-y-2">
-                {filteredNavigationItems.map((item) => (
-                  <li key={item.path}>
-                    <Link
-                      to={item.path}
-                      onClick={toggleMobileMenu}
-                      className={`flex items-center space-x-3 px-4 py-3 rounded-lg text-base font-medium transition-micro ${
-                        isActivePath(item.path)
-                          ? "text-primary bg-muted"
-                          : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                      }`}
-                    >
-                      {item.label === "Notifikasi" ? (
-                        <div className="relative">
-                          <Icon name={item.icon} size={20} />
-                          {unreadCount > 0 && (
-                            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">
-                              {unreadCount}
-                            </span>
-                          )}
-                        </div>
-                      ) : (
-                        <Icon name={item.icon} size={20} />
-                      )}
-                      <span>{item.label}</span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-
-            {/* Mobile Contact Info */}
-            <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-border bg-muted/30">
-              <div className="text-center">
-                <p className="text-sm font-caption text-muted-foreground mb-2">
-                  Hubungi Kami
-                </p>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full"
-                  onClick={() =>
-                    window.open("https://wa.me/6281224591336", "_blank")
-                  }
-                >
-                  <Icon name="MessageCircle" size={16} className="mr-2" />
-                  WhatsApp
-                </Button>
-              </div>
-            </div>
+            <p className="text-lg font-semibold">{userData?.name || "Guest"}</p>
+            <p className="text-sm text-gray-500">
+              {userData?.email || "Belum login"}
+            </p>
           </div>
+
+          {/* Navigation Links */}
+          <nav className="flex flex-col space-y-3">
+            {filteredNavigationItems.map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`flex items-center space-x-3 px-4 py-2 rounded-md text-base ${
+                  isActivePath(item.path)
+                    ? "text-primary bg-muted"
+                    : "text-gray-700 hover:text-black hover:bg-gray-100"
+                }`}
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <Icon name={item.icon} size={18} />
+                <span>{item.label}</span>
+              </Link>
+            ))}
+          </nav>
+
+          {/* Logout Button */}
+          {user ? (
+            // Jika user sudah login
+            <button
+              onClick={handleLogout}
+              className="mt-auto bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600 transition"
+            >
+              Logout
+            </button>
+          ) : (
+            // Jika user belum login
+            <button
+              onClick={handleLogin}
+              className="mt-auto bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition"
+            >
+              Login
+            </button>
+          )}
         </div>
       )}
-    </>
+    </header>
   );
 };
 
