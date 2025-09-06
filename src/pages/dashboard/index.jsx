@@ -67,7 +67,7 @@ export default function Dashboard() {
 
   // Pagination
   const [page, setPage] = useState(1);
-  const [limit] = useState(10);
+  const [limit] = useState(5);
   const [totalPages, setTotalPages] = useState(1);
 
   const dropdownRef = useRef(null);
@@ -491,26 +491,7 @@ export default function Dashboard() {
   onNextPage={handleNextPage}
 />
 
-        {/* Pagination */}
-        <div className="flex justify-between mt-4 items-center">
-          <button
-            onClick={handlePrevPage}
-            disabled={page === 1}
-            className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
-          >
-            Prev
-          </button>
-          <span>
-            Page {page} / {totalPages}
-          </span>
-          <button
-            onClick={handleNextPage}
-            disabled={page === totalPages}
-            className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
-          >
-            Next
-          </button>
-        </div>
+        
       </div>
 
       
