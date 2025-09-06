@@ -15,6 +15,8 @@ import {
 import { orderService } from "./../../api/orderService";
 import { notificationService } from "./../../api/notificationService";
 import OrderDetailModal from "./components/OrderDetailModal";
+import TableOrders from "./components/TableOrders";
+
 
 // helper tanggal singkat
 const fmtDate = (d) => {
@@ -422,7 +424,7 @@ export default function Dashboard() {
           </select>
         </div>
 
-        <div className="overflow-x-auto">
+        {/* <div className="overflow-x-auto">
           <table className="w-full min-w-[1000px] table-auto border-collapse">
             <thead>
               <tr className="bg-gray-100 text-left text-gray-600 uppercase text-sm">
@@ -478,7 +480,16 @@ export default function Dashboard() {
               ))}
             </tbody>
           </table>
-        </div>
+        </div> */}
+
+        <TableOrders
+  orders={filteredOrders}
+  onViewOrder={handleViewOrder}
+  page={page}
+  totalPages={totalPages}
+  onPrevPage={handlePrevPage}
+  onNextPage={handleNextPage}
+/>
 
         {/* Pagination */}
         <div className="flex justify-between mt-4 items-center">
@@ -501,6 +512,8 @@ export default function Dashboard() {
           </button>
         </div>
       </div>
+
+      
 
       {/* Modal */}
       {isModalOpen && selectedOrder && (

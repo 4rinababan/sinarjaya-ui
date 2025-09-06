@@ -7,7 +7,7 @@ export const orderService = {
       body: payload,//JSON.stringify(payload),
     }, false), // ✅ butuh token
     
-   getAll: ({ page = 1, limit = 10 } = {}) => {
+   getAll: ({ page = 1, limit = 5 } = {}) => {
     const query = `?page=${page}&limit=${limit}`;
     return request(`/orders${query}`, {}, true);
   },
