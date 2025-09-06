@@ -9,6 +9,8 @@ import ContactSection from "./components/ContactSection";
 import Footer from "./components/Footer";
 import { getUserFromToken } from "../../utils/storage";
 import { useNavigate } from "react-router-dom"; // <- untuk redirect
+import GetOnPlaystoreCard from "./components/GetOnPlaystoreCard";
+
 const Homepage = () => {
   const [featuredProducts, setFeaturedProducts] = useState([]);
   const [loadingProducts, setLoadingProducts] = useState(true);
@@ -49,6 +51,15 @@ const Homepage = () => {
         {/* {!loadingProducts && featuredProducts.length > 0 && (
           <FeaturedProducts products={featuredProducts} />
         )} */}
+
+        {/* Widget Get on Playstore */}
+  {/* <section className="my-12 flex justify-center">
+    <GetOnPlaystoreCard
+      title="Download Meisha Aluminium Kaca App"
+      description="Nikmati kemudahan Pesan langsung dari smartphone Anda."
+      link="https://play.google.com/store/apps/details?id=com.mak.app"
+    />
+  </section> */}
 
         <ContactSection />
       </main>
