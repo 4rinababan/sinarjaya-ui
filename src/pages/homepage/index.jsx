@@ -7,12 +7,19 @@ import FeaturedProducts from "./components/FeaturedProducts";
 import { productService } from "./../../api/productService";
 import ContactSection from "./components/ContactSection";
 import Footer from "./components/Footer";
-
+import { getUserFromToken } from "../../utils/storage";
+import { useNavigate } from "react-router-dom"; // <- untuk redirect
 const Homepage = () => {
   const [featuredProducts, setFeaturedProducts] = useState([]);
   const [loadingProducts, setLoadingProducts] = useState(true);
+  const navigate = useNavigate(); // hook navigate
+  const user = getUserFromToken();
 
   useEffect(() => {
+    if (user?.role === "admin") {
+      navigate("/dashboard");
+    }
+
     const fetchProducts = async () => {
       try {
         const response = await productService.getBestSellingProducts();
