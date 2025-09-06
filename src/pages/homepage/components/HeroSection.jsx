@@ -6,13 +6,7 @@ const HeroSection = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const heroSlides = [
-    {
-      id: 0,
-      image: "../../assets/images/logo-hero.jpg",
-      title: "",
-      subtitle: "",
-      description: ""
-    },
+
     {
       id: 1,
       image: "../../assets/images/BG-1.jpeg",
