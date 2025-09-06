@@ -44,13 +44,13 @@ export default function CategoryCarousel() {
                     alt={category.name}
                     className="w-full h-full object-cover"
                   />
-                  <div className="absolute top-4 right-4 w-12 h-12 bg-white/90 rounded-lg flex items-center justify-center">
+                  {/* <div className="absolute top-4 right-4 w-12 h-12 bg-white/90 rounded-lg flex items-center justify-center">
                     <img
                       src={`${BASE_URL}/${category.icon}`}
                       alt="icon"
                       className="w-6 h-6 object-contain"
                     />
-                  </div>
+                  </div> */}
                 </div>
                 <div className="p-4">
                   <h3 className="text-lg font-semibold">{category.name}</h3>
